@@ -4,7 +4,11 @@ public class FinalProjectExperimentation {
     }
 
     public FinalProjectExperimentation() {
-        Perceptron[] agents = new Perceptron[1000000];
+        double m = Math.random() * 20 - 10;
+        double b = Math.random() * 20 - 10;
+        System.out.println("m: " + m + ", b: " + b);
+
+        Perceptron[] agents = new Perceptron[10000];
         int[] scores = new int[agents.length];
 
         for (int i = 0; i < agents.length; i++) {
@@ -13,13 +17,14 @@ public class FinalProjectExperimentation {
 
         for (int i = 0; i < agents.length; i++) {
             int score = 0;
-            for (int j = 0; j < 100; j++) {
+            for (int j = 0; j < 10000; j++) {
                 double[] inputs = new double[2];
                 for (int k = 0; k < inputs.length; k++) {
                     inputs[k] = Math.random();
                 }
+
                 int guess = (int) agents[i].feedForward(inputs);
-                int target = inputs[0] >= inputs[1] ? 1 : -1;
+                int target = inputs[1] >= m * inputs[0] + b ? 1 : -1;
 
                 if (guess == target) {
                     score++;
@@ -35,5 +40,7 @@ public class FinalProjectExperimentation {
                 bestIndex = i;
             }
         }
+
+        System.out.println(agents[bestIndex].weights[0] + ", " + agents[bestIndex].weights[1] + ", " + agents[bestIndex].bias + ", " + scores[bestIndex]);
     }
 }

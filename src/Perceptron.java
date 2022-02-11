@@ -19,7 +19,7 @@ public class Perceptron {
         for (int i = 0; i < weights.length; i++) {
             sum += inputs[i] * weights[i];
         }
-        return sum;
+        return sign(sum);
     }
 
     Perceptron mutate() {
@@ -45,6 +45,10 @@ public class Perceptron {
     }
 
     int sign(double input) {
-        return input >= 0 ? 1 : -1;
+        if (input >= 0) {
+            return 1;
+        } else {
+            return -1;
+        }
     }
 }

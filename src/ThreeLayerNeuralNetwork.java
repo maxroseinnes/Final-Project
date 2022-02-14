@@ -26,8 +26,8 @@ public class ThreeLayerNeuralNetwork {
             }
         }
 
-        for (int i = 0; i < outputLayerBiases.length; i++) {
-            outputLayerBiases[i] = 2 * Math.random() - 1;
+        for (int i = 0; i < hiddenLayerBiases.length; i++) {
+            hiddenLayerBiases[i] = 2 * Math.random() - 1;
         }
 
         for (int i = 0; i < outputLayerBiases.length; i++) {
@@ -47,7 +47,7 @@ public class ThreeLayerNeuralNetwork {
     }
 
     double[] feedForward(double[] inputs) {
-        if (inputs.length != hiddenLayerNeurons) {
+        if (inputs.length != inputLayerNeurons) {
             System.out.println("Wrong amount of inputs");
             return new double[0];
         }

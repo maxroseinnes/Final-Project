@@ -8,13 +8,16 @@ public class FinalProjectExperimentation {
     public FinalProjectExperimentation() {
         ThreeLayerNeuralNetwork[] networks = new ThreeLayerNeuralNetwork[100];
         for (int i = 0; i < networks.length; i++) {
-           networks[i] = new ThreeLayerNeuralNetwork(2, 3, 1);
+           networks[i] = new ThreeLayerNeuralNetwork(2, 2, 1);
         }
 
-        double[][] testData = new double[1000][networks[0].inputLayerNeurons];
-        for (int i = 0; i < testData.length; i++) {
-            for (int j = 0; j < testData[0].length; j++) {
-                testData[i][j] = 2 * Math.random() - 1;
+        int resolutionX = 101;
+        int resolutionY = 101;
+        double[][] testData = new double[resolutionX * resolutionY][2];
+        for (int i = 0; i < resolutionY; i++) {
+            for (int j = 0; j < resolutionX; j++) {
+                testData[i * resolutionX + j][0] = Util.map(j, 0, resolutionX - 1, 0, 1);
+                testData[i * resolutionX + j][1] = Util.map(i, 0, resolutionY - 1, 0, 1);
             }
         }
 
@@ -37,18 +40,16 @@ public class FinalProjectExperimentation {
             }
         }
 
-        ThreeLayerNeuralNetwork bestNetwork = networks[bestIndex];
-        int resolutionX = 100;
-        int resolutionY = 100;
-        int[][] bestNetworkTestData = new int[resolutionX][resolutionY];
-        for (int i = 0; i <= resolutionX; i++) {
-            for (int j = 0; j <= resolutionY; j++) {
-                double x = 0.02 * i - 1;
-                double y = 0.02 * j - 1;
+        networks[bestIndex].printWeightsAndBiases();
 
-                bestNetworkTestData[i][j] = bestNetwork.feedForward(new double[] {x, y})[0] >= 0.5 ? 1 : -1;
+        for (int i = resolutionY - 1; i >= 0; i--) {
+            for (int j = 0; j < resolutionX; j++) {
+                int guess = networks[bestIndex].feedForward(testData[i * resolutionX + j])[0] >= 0.5 ? 1 : -1;
+                System.out.print(guess == 1 ? "@" : " ");
             }
+            System.out.println();
         }
+
     }
 }
 

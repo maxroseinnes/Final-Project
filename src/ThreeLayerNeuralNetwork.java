@@ -114,4 +114,11 @@ public class ThreeLayerNeuralNetwork {
 
         return new ThreeLayerNeuralNetwork(modifiedHiddenLayerWeights, modifiedOutputLayerWeights, modifiedHiddenLayerBiases, modifiedOutputLayerBiases);
     }
+
+    public void printWeightsAndBiases() {
+        System.out.println("Hidden layer weights: " + Arrays.deepToString(hiddenLayerWeights));
+        System.out.println("Hidden layer biases: " + Arrays.toString(hiddenLayerBiases));
+        System.out.println("Output layer weights: " + Arrays.deepToString(outputLayerWeights));
+        System.out.println("Output layer biases: " + Arrays.toString(outputLayerBiases));
+    }
 }

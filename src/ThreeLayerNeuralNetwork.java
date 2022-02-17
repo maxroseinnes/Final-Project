@@ -9,8 +9,8 @@ public class ThreeLayerNeuralNetwork {
         this.inputLayerNeurons = inputLayerNeurons;
         this.hiddenLayerNeurons = hiddenLayerNeurons;
         this.outputLayerNeurons = outputLayerNeurons;
-        hiddenLayerWeights = new double[inputLayerNeurons][hiddenLayerNeurons];
-        outputLayerWeights = new double[hiddenLayerNeurons][outputLayerNeurons];
+        hiddenLayerWeights = new double[hiddenLayerNeurons][inputLayerNeurons];
+        outputLayerWeights = new double[outputLayerNeurons][hiddenLayerNeurons];
         hiddenLayerBiases = new double[hiddenLayerNeurons];
         outputLayerBiases = new double[outputLayerNeurons];
 
@@ -57,18 +57,18 @@ public class ThreeLayerNeuralNetwork {
         for (int i = 0; i < hiddenLayerNeurons; i++) {
             double sum = hiddenLayerBiases[i];
             for (int j = 0; j < inputLayerNeurons; j++) {
-                sum += inputs[j] * hiddenLayerWeights[j][i];
+                sum += inputs[j] * hiddenLayerWeights[i][j];
             }
-            hiddenLayerOutputs[i] = sum;
+            hiddenLayerOutputs[i] = Util.sigmoid(sum);
         }
 
         double[] outputs = new double[outputLayerNeurons];
         for (int i = 0; i < outputLayerNeurons; i++) {
             double sum = outputLayerBiases[i];
             for (int j = 0; j < hiddenLayerNeurons; j++) {
-                sum += hiddenLayerOutputs[j] * outputLayerWeights[j][i];
+                sum += hiddenLayerOutputs[j] * outputLayerWeights[i][j];
             }
-            outputs[i] = sum;
+            outputs[i] = Util.sigmoid(sum);
         }
 
         return outputs;

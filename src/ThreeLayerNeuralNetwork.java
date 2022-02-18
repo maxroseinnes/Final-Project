@@ -1,124 +1,76 @@
 import java.util.Arrays;
+import java.util.Objects;
 
 public class ThreeLayerNeuralNetwork {
     final int inputLayerNeurons, hiddenLayerNeurons, outputLayerNeurons;
-    double[][] hiddenLayerWeights, outputLayerWeights;
-    double[] hiddenLayerBiases, outputLayerBiases;
+    Matrix hiddenLayerWeights, outputLayerWeights;
+    Matrix hiddenLayerBiases, outputLayerBiases;
 
     public ThreeLayerNeuralNetwork(int inputLayerNeurons, int hiddenLayerNeurons, int outputLayerNeurons) {
         this.inputLayerNeurons = inputLayerNeurons;
         this.hiddenLayerNeurons = hiddenLayerNeurons;
         this.outputLayerNeurons = outputLayerNeurons;
-        hiddenLayerWeights = new double[hiddenLayerNeurons][inputLayerNeurons];
-        outputLayerWeights = new double[outputLayerNeurons][hiddenLayerNeurons];
-        hiddenLayerBiases = new double[hiddenLayerNeurons];
-        outputLayerBiases = new double[outputLayerNeurons];
-
-        for (int i = 0; i < hiddenLayerWeights.length; i++) {
-            for (int j = 0; j < hiddenLayerWeights[0].length; j++) {
-                hiddenLayerWeights[i][j] = 2 * Math.random() - 1;
-            }
-        }
-
-        for (int i = 0; i < outputLayerWeights.length; i++) {
-            for (int j = 0; j < outputLayerWeights[0].length; j++) {
-                outputLayerWeights[i][j] = 2 * Math.random() - 1;
-            }
-        }
-
-        for (int i = 0; i < hiddenLayerBiases.length; i++) {
-            hiddenLayerBiases[i] = 2 * Math.random() - 1;
-        }
-
-        for (int i = 0; i < outputLayerBiases.length; i++) {
-            outputLayerBiases[i] = 2 * Math.random() - 1;
-        }
+        hiddenLayerWeights = new Matrix(inputLayerNeurons, hiddenLayerNeurons);
+        outputLayerWeights = new Matrix(hiddenLayerNeurons, outputLayerNeurons);
+        hiddenLayerBiases = new Matrix(hiddenLayerNeurons, 0);
+        outputLayerBiases = new Matrix(outputLayerNeurons, 0);
     }
 
-    public ThreeLayerNeuralNetwork(double[][] hiddenLayerWeights, double[][] outputLayerWeights, double[] hiddenLayerBiases, double[] outputLayerBiases) {
-        this.hiddenLayerWeights = hiddenLayerWeights;
-        this.outputLayerWeights = outputLayerWeights;
-        this.hiddenLayerBiases = hiddenLayerBiases;
-        this.outputLayerBiases = outputLayerBiases;
-
-        this.inputLayerNeurons = hiddenLayerWeights.length;
-        this.hiddenLayerNeurons = hiddenLayerWeights[0].length;
-        this.outputLayerNeurons = outputLayerWeights[0].length;
-    }
-
-    double[] feedForward(double[] inputs) {
-        if (inputs.length != inputLayerNeurons) {
-            System.out.println("Wrong amount of inputs");
-            return new double[0];
+    Matrix feedForward(Matrix inputs) {
+        if (inputs.getColumns() != 1 || inputs.getRows() != inputLayerNeurons) {
+            System.out.println("Input matrix must have one column and the same number of rows as the number of inputs to the network.");
+            return null;
         }
 
-        double[] hiddenLayerOutputs = new double[hiddenLayerNeurons];
-
-        for (int i = 0; i < hiddenLayerNeurons; i++) {
-            double sum = hiddenLayerBiases[i];
-            for (int j = 0; j < inputLayerNeurons; j++) {
-                sum += inputs[j] * hiddenLayerWeights[i][j];
-            }
-            hiddenLayerOutputs[i] = Util.sigmoid(sum);
-        }
-
-        double[] outputs = new double[outputLayerNeurons];
-        for (int i = 0; i < outputLayerNeurons; i++) {
-            double sum = outputLayerBiases[i];
-            for (int j = 0; j < hiddenLayerNeurons; j++) {
-                sum += hiddenLayerOutputs[j] * outputLayerWeights[i][j];
-            }
-            outputs[i] = Util.sigmoid(sum);
-        }
+        Matrix hiddenLayerOutputs = Matrix.sigmoid(Objects.requireNonNull(Matrix.add(Objects.requireNonNull(Matrix.multiply(hiddenLayerWeights, inputs)), hiddenLayerBiases)));
+        Matrix outputs = Matrix.sigmoid(Objects.requireNonNull(Matrix.add(Objects.requireNonNull(Matrix.multiply(outputLayerWeights, hiddenLayerOutputs)), outputLayerBiases)));
 
         return outputs;
     }
 
     ThreeLayerNeuralNetwork mutate(double mutationChance, double mutationAmount) {
-        double[][] modifiedHiddenLayerWeights = new double[inputLayerNeurons][hiddenLayerNeurons];
-        double[][] modifiedOutputLayerWeights = new double[hiddenLayerNeurons][outputLayerNeurons];
-        double[] modifiedHiddenLayerBiases = new double[hiddenLayerNeurons];
-        double[] modifiedOutputLayerBiases = new double[outputLayerNeurons];
+        Matrix modifiedHiddenLayerWeights = new Matrix(inputLayerNeurons, hiddenLayerNeurons);
+        Matrix modifiedOutputLayerWeights = new Matrix(hiddenLayerNeurons, outputLayerNeurons);
+        Matrix modifiedHiddenLayerBiases = new Matrix(hiddenLayerNeurons, 1);
+        Matrix modifiedOutputLayerBiases = new Matrix(outputLayerNeurons, 1);
 
         for (int i = 0; i < inputLayerNeurons; i++) {
             for (int j = 0; j < hiddenLayerNeurons; j++) {
-                modifiedHiddenLayerWeights[i][j] = hiddenLayerWeights[i][j];
+
                 if (Math.random() < mutationChance) {
-                    modifiedHiddenLayerWeights[i][j] += 2 * Math.random() * mutationAmount - mutationAmount;
+                    modifiedHiddenLayerWeights.setValue(hiddenLayerWeights.getValue(i, j) + (2 * Math.random() * mutationAmount - mutationAmount), i, j);
+                } else {
+                    modifiedHiddenLayerWeights.setValue(hiddenLayerWeights.getValue(i, j), i, j);
                 }
             }
         }
 
         for (int i = 0; i < hiddenLayerNeurons; i++) {
             for (int j = 0; j < outputLayerNeurons; j++) {
-                modifiedOutputLayerWeights[i][j] = outputLayerWeights[i][j];
                 if (Math.random() < mutationChance) {
-                    modifiedOutputLayerWeights[i][j] += 2 * Math.random() * mutationAmount - mutationAmount;
+                    modifiedOutputLayerWeights.setValue(outputLayerWeights.getValue(i, j) + (2 * Math.random() * mutationAmount - mutationAmount), i, j);
+                } else {
+                    modifiedOutputLayerWeights.setValue(outputLayerWeights.getValue(i, j), i, j);
                 }
             }
         }
 
         for (int i = 0; i < hiddenLayerNeurons; i++) {
-            modifiedHiddenLayerBiases[i] = hiddenLayerBiases[i];
             if (Math.random() < mutationChance) {
-                modifiedHiddenLayerBiases[i] += 2 * Math.random() * mutationAmount - mutationAmount;
+                modifiedHiddenLayerBiases.setValue(hiddenLayerBiases.getValue(i, 0) + (2 * Math.random() * mutationAmount - mutationAmount), i, 0);
+            } else {
+                modifiedHiddenLayerBiases.setValue(hiddenLayerBiases.getValue(i, 0), i, 0);
             }
         }
 
         for (int i = 0; i < outputLayerNeurons; i++) {
-            modifiedOutputLayerBiases[i] = outputLayerBiases[i];
             if (Math.random() < mutationChance) {
-                modifiedOutputLayerBiases[i] += 2 * Math.random() * mutationAmount - mutationAmount;
+                modifiedOutputLayerBiases.setValue(outputLayerBiases.getValue(i, 0) + (2 * Math.random() * mutationAmount - mutationAmount), i, 0);
+            } else {
+                modifiedOutputLayerBiases.setValue(outputLayerBiases.getValue(i, 0), i, 0);
             }
         }
 
-        return new ThreeLayerNeuralNetwork(modifiedHiddenLayerWeights, modifiedOutputLayerWeights, modifiedHiddenLayerBiases, modifiedOutputLayerBiases);
-    }
-
-    public void printWeightsAndBiases() {
-        System.out.println("Hidden layer weights: " + Arrays.deepToString(hiddenLayerWeights));
-        System.out.println("Hidden layer biases: " + Arrays.toString(hiddenLayerBiases));
-        System.out.println("Output layer weights: " + Arrays.deepToString(outputLayerWeights));
-        System.out.println("Output layer biases: " + Arrays.toString(outputLayerBiases));
+        return null;
     }
 }

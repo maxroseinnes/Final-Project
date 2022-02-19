@@ -74,4 +74,3 @@ public class ThreeLayerNeuralNetwork {
         return null;
     }
 }
-

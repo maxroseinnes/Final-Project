@@ -7,3 +7,4 @@ public class Util {
         return 1 / (1 + Math.exp(-input));
     }
 }
+

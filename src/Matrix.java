@@ -1,5 +1,9 @@
+import java.util.Arrays;
+import java.util.Random;
+
 public class Matrix {
-    double[][] contents;
+    private static Random random = new Random();
+    private double[][] contents;
 
     public Matrix(double[][] contents) {
         this.contents = contents;
@@ -9,10 +13,10 @@ public class Matrix {
         contents = new double[rows][columns];
     }
 
-    public void initContentsRandomly() {
+    public void setContentsRandomly() {
         for (int i = 0; i < contents.length; i++) {
             for (int j = 0; j < contents[0].length; j++) {
-                contents[i][j] = Util.map(Math.random(), 0, 1, -1, 1);
+                contents[i][j] = random.nextGaussian();
             }
         }
     }
@@ -83,5 +87,11 @@ public class Matrix {
         }
 
         return toReturn;
+    }
+
+    public void printContents() {
+        for (int i = 0; i < contents.length; i++) {
+            System.out.println(Arrays.toString(contents[i]));
+        }
     }
 }

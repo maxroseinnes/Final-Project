@@ -6,24 +6,26 @@ public class ThreeLayerNeuralNetwork {
     Matrix hiddenLayerWeights, outputLayerWeights;
     Matrix hiddenLayerBiases, outputLayerBiases;
 
-    public ThreeLayerNeuralNetwork(int inputLayerNeurons, int hiddenLayerNeurons, int outputLayerNeurons) {
+    public ThreeLayerNeuralNetwork(int inputLayerNeurons, int hiddenLayerNeurons, int outputLayerNeurons, boolean initializeRandomly) {
         this.inputLayerNeurons = inputLayerNeurons;
         this.hiddenLayerNeurons = hiddenLayerNeurons;
         this.outputLayerNeurons = outputLayerNeurons;
-        hiddenLayerWeights = new Matrix(inputLayerNeurons, hiddenLayerNeurons);
-        outputLayerWeights = new Matrix(hiddenLayerNeurons, outputLayerNeurons);
-        hiddenLayerBiases = new Matrix(hiddenLayerNeurons, 0);
-        outputLayerBiases = new Matrix(outputLayerNeurons, 0);
+        hiddenLayerWeights = new Matrix(hiddenLayerNeurons, inputLayerNeurons);
+        outputLayerWeights = new Matrix(outputLayerNeurons, hiddenLayerNeurons);
+        hiddenLayerBiases = new Matrix(hiddenLayerNeurons, 1);
+        outputLayerBiases = new Matrix(outputLayerNeurons, 1);
+
+        if (initializeRandomly) {
+            hiddenLayerWeights.setContentsRandomly();
+            outputLayerWeights.setContentsRandomly();
+            hiddenLayerBiases.setContentsRandomly();
+            outputLayerBiases.setContentsRandomly();
+        }
     }
 
     Matrix feedForward(Matrix inputs) {
-        if (inputs.getColumns() != 1 || inputs.getRows() != inputLayerNeurons) {
-            System.out.println("Input matrix must have one column and the same number of rows as the number of inputs to the network.");
-            return null;
-        }
-
-        Matrix hiddenLayerOutputs = Matrix.sigmoid(Objects.requireNonNull(Matrix.add(Objects.requireNonNull(Matrix.multiply(hiddenLayerWeights, inputs)), hiddenLayerBiases)));
-        Matrix outputs = Matrix.sigmoid(Objects.requireNonNull(Matrix.add(Objects.requireNonNull(Matrix.multiply(outputLayerWeights, hiddenLayerOutputs)), outputLayerBiases)));
+        Matrix hiddenLayerOutputs = Matrix.sigmoid(Matrix.add(Matrix.multiply(hiddenLayerWeights, inputs), hiddenLayerBiases));
+        Matrix outputs = Matrix.sigmoid(Matrix.add(Matrix.multiply(outputLayerWeights, hiddenLayerOutputs), outputLayerBiases));
 
         return outputs;
     }
@@ -72,5 +74,16 @@ public class ThreeLayerNeuralNetwork {
         }
 
         return null;
+    }
+
+    public void printContents() {
+        System.out.println("Hidden layer weights: ");
+        hiddenLayerWeights.printContents();
+        System.out.println("Output layer weights: ");
+        outputLayerWeights.printContents();
+        System.out.println("Hidden layer biases: ");
+        hiddenLayerBiases.printContents();
+        System.out.println("Output layer biases: ");
+        outputLayerBiases.printContents();
     }
 }

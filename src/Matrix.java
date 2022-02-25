@@ -37,6 +37,15 @@ public class Matrix {
         return contents;
     }
 
+    public double getRowSum(int row) {
+        double toReturn = 0;
+        for (int i = 0; i < contents[0].length; i++) {
+            toReturn += contents[row][i];
+        }
+
+        return toReturn;
+    }
+
     public void setValue(double value, int row, int column) {
         contents[row][column] = value;
     }
@@ -72,6 +81,22 @@ public class Matrix {
         for (int i = 0; i < toReturn.getRows(); i++) {
             for (int j = 0; j < toReturn.getColumns(); j++) {
                 toReturn.setValue(a.getValue(i, j) + b.getValue(i, j), i, j);
+            }
+        }
+
+        return toReturn;
+    }
+
+    public static Matrix subtract(Matrix a, Matrix b) {
+        if (a.getRows() != b.getRows() || a.getColumns() != b.getColumns()) {
+            System.out.println("Matrix A must have the same dimensions as matrix B.");
+            return null;
+        }
+
+        Matrix toReturn = new Matrix(a.getRows(), a.getColumns());
+        for (int i = 0; i < toReturn.getRows(); i++) {
+            for (int j = 0; j < toReturn.getColumns(); j++) {
+                toReturn.setValue(a.getValue(i, j) - b.getValue(i, j), i, j);
             }
         }
 

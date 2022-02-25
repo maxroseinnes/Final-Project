@@ -24,12 +24,35 @@ public class ThreeLayerNeuralNetwork {
     }
 
     Matrix feedForward(Matrix inputs) {
+        if (inputs.getRows() != inputLayerNeurons || inputs.getColumns() != 1) {
+            return null;
+        }
+        
         Matrix hiddenLayerOutputs = Matrix.sigmoid(Matrix.add(Matrix.multiply(hiddenLayerWeights, inputs), hiddenLayerBiases));
         Matrix outputs = Matrix.sigmoid(Matrix.add(Matrix.multiply(outputLayerWeights, hiddenLayerOutputs), outputLayerBiases));
 
         return outputs;
     }
 
+    void backPropagate(Matrix outputs, Matrix correctOutputs) {
+        if (outputs.getRows() != outputLayerNeurons || outputs.getColumns() != 1 || correctOutputs.getRows() != outputLayerNeurons || correctOutputs.getColumns() != 1) {
+            return;
+        }
+        
+        Matrix errors = Matrix.subtract(correctOutputs, outputs);
+        Matrix initialOutputLayerWeights = outputLayerWeights;
+
+        
+        Matrix hiddenLayerErrors = new Matrix(hiddenLayerNeurons, 1);
+
+        for (int i = 0; i < hiddenLayerErrors.getRows(); i++) {
+            double errorContributionSum = 0;
+            for (int j = 0; j < errors.getRows(); j++) {
+                
+            }
+        }
+    }
+    
     ThreeLayerNeuralNetwork mutate(double mutationChance, double mutationAmount) {
         Matrix modifiedHiddenLayerWeights = new Matrix(inputLayerNeurons, hiddenLayerNeurons);
         Matrix modifiedOutputLayerWeights = new Matrix(hiddenLayerNeurons, outputLayerNeurons);

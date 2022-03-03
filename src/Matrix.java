@@ -50,6 +50,30 @@ public class Matrix {
         contents[row][column] = value;
     }
 
+    public Matrix transcribe() {
+        Matrix toReturn = new Matrix(getColumns(), getRows());
+
+        for (int i = 0; i < toReturn.getRows(); i++) {
+            for (int j = 0; j < toReturn.getColumns(); j++) {
+                toReturn.setValue(getValue(j, i), i, j);
+            }
+        }
+
+        return toReturn;
+    }
+
+    public Matrix scalarProduct(double scalar) {
+        Matrix toReturn = new Matrix(getRows(), getColumns());
+
+        for (int i = 0; i < toReturn.getRows(); i++) {
+            for (int j = 0; j < toReturn.getColumns(); j++) {
+                toReturn.setValue(scalar * getValue(i, j), i, j);
+            }
+        }
+
+        return toReturn;
+    }
+
     public static Matrix multiply(Matrix a, Matrix b) {
         if (a.getColumns() != b.getRows()) {
             System.out.println("Matrix A must have the same number of columns as the number of rows in matrix B.");
@@ -65,6 +89,22 @@ public class Matrix {
                 }
 
                 toReturn.setValue(sum, i, j);
+            }
+        }
+
+        return toReturn;
+    }
+
+    public static Matrix hadamard(Matrix a, Matrix b) {
+        if (a.getRows() != b.getRows() || a.getColumns() != b.getColumns()) {
+            System.out.println("Matrices must have identical dimensions.");
+            return null;
+        }
+
+        Matrix toReturn = new Matrix(a.getRows(), b.getColumns());
+        for (int i = 0; i < a.getRows(); i++) {
+            for (int j = 0; j < b.getRows(); j++) {
+                toReturn.setValue(a.getValue(i, j) * b.getValue(i, j), i, j);
             }
         }
 

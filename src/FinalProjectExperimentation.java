@@ -12,6 +12,6 @@ public class FinalProjectExperimentation {
         for (int i = 0; i < inputs.getRows(); i++) {
             inputs.setValue(Util.map(Math.random(), 0, 1, -1, 1), i, 0);
         }
-        Matrix output = network.feedForward(inputs);
+        Matrix output = network.feedForward(inputs, 2);
     }
 }

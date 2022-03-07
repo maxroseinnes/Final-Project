@@ -1,24 +1,13 @@
 import java.util.Arrays;
-import java.util.Random;
 
 public class Matrix {
-    private static Random random = new Random();
     private double[][] contents;
 
-    public Matrix(double[][] contents) {
-        this.contents = contents;
-    }
-
     public Matrix(int rows, int columns) {
-        contents = new double[rows][columns];
-    }
-
-    public void setContentsRandomly() {
-        for (int i = 0; i < contents.length; i++) {
-            for (int j = 0; j < contents[0].length; j++) {
-                contents[i][j] = random.nextGaussian();
-            }
+        if (rows < 1 || columns < 1) {
+            throw new IllegalArgumentException("Invalid matrix shape.");
         }
+        contents = new double[rows][columns];
     }
 
     public int getRows() {
@@ -30,6 +19,10 @@ public class Matrix {
     }
 
     public double getValue(int row, int column) {
+        if (row < 0 || row >= getRows()) {
+            throw new IllegalArgumentException("Invalid row or column.");
+        }
+
         return contents[row][column];
     }
 
@@ -37,16 +30,11 @@ public class Matrix {
         return contents;
     }
 
-    public double getRowSum(int row) {
-        double toReturn = 0;
-        for (int i = 0; i < contents[0].length; i++) {
-            toReturn += contents[row][i];
+    public void setValue(double value, int row, int column) {
+        if (row < 0 || row >= getRows() || column < 0 || column >= getColumns()) {
+            throw new IllegalArgumentException("Invalid row or column.");
         }
 
-        return toReturn;
-    }
-
-    public void setValue(double value, int row, int column) {
         contents[row][column] = value;
     }
 
@@ -62,22 +50,17 @@ public class Matrix {
         return toReturn;
     }
 
-    public Matrix scalarProduct(double scalar) {
-        Matrix toReturn = new Matrix(getRows(), getColumns());
-
-        for (int i = 0; i < toReturn.getRows(); i++) {
-            for (int j = 0; j < toReturn.getColumns(); j++) {
-                toReturn.setValue(scalar * getValue(i, j), i, j);
+    public void multiplyBy(double scalar) {
+        for (int i = 0; i < getRows(); i++) {
+            for (int j = 0; j < getColumns(); j++) {
+                setValue(scalar * getValue(i, j), i, j);
             }
         }
-
-        return toReturn;
     }
 
-    public static Matrix multiply(Matrix a, Matrix b) {
+    public static Matrix product(Matrix a, Matrix b) {
         if (a.getColumns() != b.getRows()) {
-            System.out.println("Matrix A must have the same number of columns as the number of rows in matrix B.");
-            return null;
+            throw new IllegalArgumentException("Incompatible matrix shapes.");
         }
         Matrix toReturn = new Matrix(a.getRows(), b.getColumns());
 
@@ -95,15 +78,35 @@ public class Matrix {
         return toReturn;
     }
 
+    public void multiplyBy(Matrix m) {
+        if (getColumns() != m.getRows()) {
+            throw new IllegalArgumentException("Incompatible matrix shapes.");
+        }
+
+        Matrix product = new Matrix(getRows(), m.getColumns());
+
+        for (int i = 0; i < product.getRows(); i++) {
+            for (int j = 0; j < product.getColumns(); j++) {
+                double sum = 0;
+                for (int k = 0; k < getColumns(); k++) {
+                    sum += getValue(i, k) * m.getValue(k, j);
+                }
+
+                product.setValue(sum, i, j);
+            }
+        }
+
+        this.contents = product.getContents();
+    }
+
     public static Matrix hadamard(Matrix a, Matrix b) {
         if (a.getRows() != b.getRows() || a.getColumns() != b.getColumns()) {
-            System.out.println("Matrices must have identical dimensions.");
-            return null;
+            throw new IllegalArgumentException("Incompatible matrix dimensions.");
         }
 
         Matrix toReturn = new Matrix(a.getRows(), b.getColumns());
-        for (int i = 0; i < a.getRows(); i++) {
-            for (int j = 0; j < b.getRows(); j++) {
+        for (int i = 0; i < toReturn.getRows(); i++) {
+            for (int j = 0; j < toReturn.getColumns(); j++) {
                 toReturn.setValue(a.getValue(i, j) * b.getValue(i, j), i, j);
             }
         }
@@ -111,10 +114,21 @@ public class Matrix {
         return toReturn;
     }
 
-    public static Matrix add(Matrix a, Matrix b) {
+    public void add(Matrix toAdd) {
+        if (getRows() != toAdd.getRows() || getColumns() != toAdd.getColumns()) {
+            throw new IllegalArgumentException("Incompatible matrix shapes");
+        }
+
+        for (int i = 0; i < getRows(); i++) {
+            for (int j = 0; j < getColumns(); j++) {
+                setValue(getValue(i, j) + toAdd.getValue(i, j), i, j);
+            }
+        }
+    }
+
+    public static Matrix sum(Matrix a, Matrix b) {
         if (a.getRows() != b.getRows() || a.getColumns() != b.getColumns()) {
-            System.out.println("Matrix A must have the same dimensions as matrix B.");
-            return null;
+            throw new IllegalArgumentException("Incompatible matrix shapes.");
         }
 
         Matrix toReturn = new Matrix(a.getRows(), a.getColumns());
@@ -127,13 +141,25 @@ public class Matrix {
         return toReturn;
     }
 
+    public void subtract(Matrix toSubtract) {
+        if (getRows() != toSubtract.getRows() || getColumns() != toSubtract.getColumns()) {
+            throw new IllegalArgumentException("Incompatible matrix shape");
+        }
+
+        for (int i = 0; i < getRows(); i++) {
+            for (int j = 0; j < getColumns(); j++) {
+                setValue(getValue(i, j) - toSubtract.getValue(i, j), i, j);
+            }
+        }
+    }
+
     public static Matrix subtract(Matrix a, Matrix b) {
         if (a.getRows() != b.getRows() || a.getColumns() != b.getColumns()) {
-            System.out.println("Matrix A must have the same dimensions as matrix B.");
-            return null;
+            throw new IllegalArgumentException("Incompatible matrix shapes.");
         }
 
         Matrix toReturn = new Matrix(a.getRows(), a.getColumns());
+
         for (int i = 0; i < toReturn.getRows(); i++) {
             for (int j = 0; j < toReturn.getColumns(); j++) {
                 toReturn.setValue(a.getValue(i, j) - b.getValue(i, j), i, j);
@@ -143,11 +169,40 @@ public class Matrix {
         return toReturn;
     }
 
-    public static Matrix sigmoid(Matrix input) {
-        Matrix toReturn = new Matrix(input.getRows(), input.getColumns());
+    public void sigmoid() {
+        for (int i = 0; i < getRows(); i++) {
+            for (int j = 0; j < getColumns(); j++) {
+                setValue(1 / (1 + Math.exp(-getValue(i, j))), i, j);
+            }
+        }
+    }
+
+    public static Matrix sigmoid(Matrix matrix) {
+        Matrix toReturn = new Matrix(matrix.getRows(), matrix.getColumns());
+
         for (int i = 0; i < toReturn.getRows(); i++) {
             for (int j = 0; j < toReturn.getColumns(); j++) {
-                toReturn.setValue(Util.sigmoid(input.getValue(i, j)), i, j);
+                toReturn.setValue(1 / (1 + Math.exp(-matrix.getValue(i, j))), i, j);
+            }
+        }
+
+        return toReturn;
+    }
+
+    public void dSigmoid() {
+        for (int i = 0; i < getRows(); i++) {
+            for (int j = 0; j < getColumns(); j++) {
+                setValue(getValue(i, j) * (1 - getValue(i, j)), i, j);
+            }
+        }
+    }
+
+    public static Matrix dSigmoid(Matrix sigmoidOutputs) {
+        Matrix toReturn = new Matrix(sigmoidOutputs.getRows(), sigmoidOutputs.getColumns());
+
+        for (int i = 0; i < toReturn.getRows(); i++) {
+            for (int j = 0; j < toReturn.getColumns(); j++) {
+                toReturn.setValue(sigmoidOutputs.getValue(i, j) * (1 - sigmoidOutputs.getValue(i, j)), i, j);
             }
         }
 
@@ -155,7 +210,7 @@ public class Matrix {
     }
 
     public void printContents() {
-        for (int i = 0; i < contents.length; i++) {
+        for (int i = 0; i < getRows(); i++) {
             System.out.println(Arrays.toString(contents[i]));
         }
     }

@@ -68,17 +68,17 @@ public class ThreeLayerNeuralNetwork {
         Matrix outputs = feedForward(inputs, 2);
 
         // Compute errors
-        Matrix errors = Matrix.subtract(outputs, targets);
-        Matrix hiddenLayerErrors = Matrix.product(outputLayerWeights.transcribe(), errors);
+        Matrix errors = Matrix.difference(outputs, targets);
+        Matrix hiddenLayerErrors = Matrix.product(outputLayerWeights.transposition(), errors);
 
         // Compute gradient for the output layer's weights
         Matrix outputLayerWeightsGradient = Matrix.hadamard(errors, Matrix.dSigmoid(outputs));
-        outputLayerWeightsGradient.multiplyBy(hiddenLayerOutputs.transcribe());
+        outputLayerWeightsGradient.multiplyBy(hiddenLayerOutputs.transposition());
         outputLayerWeightsGradient.multiplyBy(learningRate);
 
         // Compute gradient for the hidden layer's weights
         Matrix hiddenLayerWeightsGradient = Matrix.hadamard(hiddenLayerErrors, Matrix.dSigmoid(hiddenLayerOutputs));
-        hiddenLayerWeightsGradient.multiplyBy(inputs.transcribe());
+        hiddenLayerWeightsGradient.multiplyBy(inputs.transposition());
         hiddenLayerWeightsGradient.multiplyBy(learningRate);
 
         // Compute gradient for the output layer's biases

@@ -38,7 +38,7 @@ public class Matrix {
         contents[row][column] = value;
     }
 
-    public Matrix transcribe() {
+    public Matrix transposition() {
         Matrix toReturn = new Matrix(getColumns(), getRows());
 
         for (int i = 0; i < toReturn.getRows(); i++) {
@@ -48,14 +48,6 @@ public class Matrix {
         }
 
         return toReturn;
-    }
-
-    public void multiplyBy(double scalar) {
-        for (int i = 0; i < getRows(); i++) {
-            for (int j = 0; j < getColumns(); j++) {
-                setValue(scalar * getValue(i, j), i, j);
-            }
-        }
     }
 
     public static Matrix product(Matrix a, Matrix b) {
@@ -97,6 +89,14 @@ public class Matrix {
         }
 
         this.contents = product.getContents();
+    }
+
+    public void multiplyBy(double scalar) {
+        for (int i = 0; i < getRows(); i++) {
+            for (int j = 0; j < getColumns(); j++) {
+                setValue(scalar * getValue(i, j), i, j);
+            }
+        }
     }
 
     public static Matrix hadamard(Matrix a, Matrix b) {
@@ -153,7 +153,7 @@ public class Matrix {
         }
     }
 
-    public static Matrix subtract(Matrix a, Matrix b) {
+    public static Matrix difference(Matrix a, Matrix b) {
         if (a.getRows() != b.getRows() || a.getColumns() != b.getColumns()) {
             throw new IllegalArgumentException("Incompatible matrix shapes.");
         }

@@ -22,11 +22,24 @@ public class Perceptron {
             throw new IllegalArgumentException("Incompatible matrix shapes.");
         }
 
-        return sigmoid(Matrix.product(weights, inputs).getValue(0, 0) + bias);
+        return Math.signum(Matrix.product(weights, inputs).getValue(0, 0) + bias);
     }
 
-    public static double sigmoid(double x) {
-        return 1 / (1 + Math.exp(-x));
+    public void backPropagate(Matrix inputs, double target, double learningRate) {
+        if (inputs.getRows() != inputCount || inputs.getColumns() != 1) {
+            throw new IllegalArgumentException("Invalid input matrix shape.");
+        }
+
+        double output = feedForward(inputs);
+        double error = output - target;
+
+        //System.out.println(inputs.getValue(0, 0) + ", " + inputs.getValue(1, 0) + ": " + error);
+        Matrix weightsGradient = inputs.transposition();
+        weightsGradient.multiplyBy(learningRate * error);
+        double biasGradient = learningRate * error;
+
+        weights.subtract(weightsGradient);
+        bias -= biasGradient;
     }
 
     public void printData() {

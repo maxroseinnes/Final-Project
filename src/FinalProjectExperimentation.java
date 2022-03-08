@@ -10,14 +10,17 @@ public class FinalProjectExperimentation {
 
     public FinalProjectExperimentation() {
         Perceptron perceptron = new Perceptron(2);
-        perceptron.printData();
-        for (int i = 0; i < 100; i++) {
-            Matrix inputs = new Matrix(perceptron.inputCount, 1);
-            for (int j = 0; j < inputs.getRows(); j++) {
+
+        for (int i = 0; i < 1000000; i++) {
+            Matrix inputs = new Matrix(2, 1);
+            for (int j = 0; j < 2; j++) {
                 inputs.setValue(Math.random(), j, 0);
             }
 
-            System.out.println(perceptron.feedForward(inputs));
+            double target = Math.signum(inputs.getValue(0, 0) - inputs.getValue(1, 0));
+            perceptron.backPropagate(inputs, target, 0.01);
         }
+
+        perceptron.printData();
     }
 }

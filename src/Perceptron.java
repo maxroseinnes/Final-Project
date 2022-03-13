@@ -42,6 +42,31 @@ public class Perceptron {
         bias -= biasGradient;
     }
 
+    public void backPropagate(Matrix[] batch, double[] targets, double learningRate) {
+        for (int i = 0; i < batch.length; i++) {
+            if (batch[i].getRows() != inputCount || batch[i].getColumns() != 1 || batch.length != targets.length) {
+                throw new IllegalArgumentException("Invalid shape in one or more of the batch input matrices, or unequal batch size and amount of provided targets.");
+            }
+        }
+
+        double[] outputs = new double[batch.length];
+        double[] errors = new double[batch.length];
+        for (int i = 0; i < outputs.length; i++) {
+            outputs[i] = feedForward(batch[i]);
+            errors[i] = outputs[i] - targets[i];
+        }
+
+        Matrix[] weightsGradients = new Matrix[batch.length];
+        for (int i = 0; i < weightsGradients.length; i++) {
+            weightsGradients[i] = batch[i].transposition();
+            weightsGradients[i].multiplyBy(learningRate * errors[i]);
+        }
+        double[] biasGradients = new double[batch.length];
+        for (int i = 0; i < biasGradients.length; i++) {
+            biasGradients[i] = learningRate * errors[i];
+        }
+    }
+
     public void printData() {
         System.out.println("Weights: ");
         weights.printContents();

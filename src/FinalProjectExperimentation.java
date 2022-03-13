@@ -25,15 +25,28 @@ public class FinalProjectExperimentation {
         double yLowerBound = Math.min(mTemplate * xLowerBound + bTemplate - noise, mTemplate * xUpperBound + bTemplate - noise);
         double yUpperBound = Math.max(mTemplate * xLowerBound + bTemplate + noise, mTemplate * xUpperBound + bTemplate + noise);
 
-        System.out.println(mTemplate + " " + bTemplate);
-
         double[][] points = new double[resolution + 1][2];
         for (int i = 0; i < points.length; i++) {
             points[i][0] = xLowerBound + i * (xUpperBound - xLowerBound) / resolution;
             points[i][1] = mTemplate * points[i][0] + bTemplate + Math.random() * 2 * noise - noise;
 
-            System.out.println("(" + points[i][0] + "," + points[i][1] + ")");
+            //System.out.println("(" + points[i][0] + "," + points[i][1] + ")");
         }
+
+        NeuralNet net = new NeuralNet(3, 2, 1);
+        net.randomize();
+        net.printContents();
+
+        Matrix inputs = new Matrix(3, 1);
+        for (int i = 0; i < inputs.getRows(); i++) {
+            inputs.setValue(Math.random(), i, 0);
+        }
+        System.out.println("Inputs:");
+        inputs.printContents();
+
+        Matrix outputs = net.feedForward(inputs, 2);
+        System.out.println("Outputs:");
+        outputs.printContents();
 
 //        for (int i = 0; i < 1000000; i++) {
 //            Matrix inputs = new Matrix(2, 1);

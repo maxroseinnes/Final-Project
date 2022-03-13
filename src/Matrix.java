@@ -26,16 +26,33 @@ public class Matrix {
         return contents[row][column];
     }
 
-    public double[][] getContents() {
-        return contents;
-    }
-
     public void setValue(double value, int row, int column) {
         if (row < 0 || row >= getRows() || column < 0 || column >= getColumns()) {
             throw new IllegalArgumentException("Invalid row or column.");
         }
 
         contents[row][column] = value;
+    }
+
+    public double[][] getContents() {
+        return contents;
+    }
+
+    public Matrix fromArray(double[][] array) {
+        for (int i = 1; i < array.length; i++) {
+            if (array[i].length != array[0].length) {
+                throw new IllegalArgumentException("Inconsistent row lengths.");
+            }
+        }
+
+        Matrix toReturn = new Matrix(array.length, array[0].length);
+        for (int i = 0; i < toReturn.getRows(); i++) {
+            for (int j = 0; j < toReturn.getColumns(); j++) {
+                toReturn.setValue(array[i][j], i, j);
+            }
+        }
+
+        return toReturn;
     }
 
     public Matrix transposition() {

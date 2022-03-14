@@ -33,20 +33,32 @@ public class FinalProjectExperimentation {
             //System.out.println("(" + points[i][0] + "," + points[i][1] + ")");
         }
 
-        NeuralNet net = new NeuralNet(3, 2, 1);
+        NeuralNet net = new NeuralNet(2, 3, 2);
         net.randomize();
         net.printContents();
 
-        Matrix inputs = new Matrix(3, 1);
+        Matrix inputs = new Matrix(net.neuronCounts[0], 1);
         for (int i = 0; i < inputs.getRows(); i++) {
             inputs.setValue(Math.random(), i, 0);
         }
+        Matrix targets = new Matrix(net.neuronCounts[net.neuronCounts.length - 1], 1);
+        for (int i = 0; i < targets.getRows(); i++) {
+            targets.setValue(Math.random(), i, 0);
+        }
         System.out.println("Inputs:");
         inputs.printContents();
+        System.out.println("Targets:");
+        targets.printContents();
 
-        Matrix outputs = net.feedForward(inputs, 2);
-        System.out.println("Outputs:");
-        outputs.printContents();
+        Matrix[] outputs = new Matrix[net.neuronCounts.length - 1];
+        net.feedForward(inputs, 1);
+        for (int i = 0; i < outputs.length; i++) {
+            outputs[i] = net.feedForward(inputs, i + 1);
+            System.out.println("Layer " + (i + 1) + " outputs:");
+            outputs[i].printContents();
+        }
+
+        net.backPropagate(inputs, targets, 1);
 
 //        for (int i = 0; i < 1000000; i++) {
 //            Matrix inputs = new Matrix(2, 1);

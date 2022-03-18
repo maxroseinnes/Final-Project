@@ -44,10 +44,12 @@ public class NeuralNet {
     }
 
     Matrix feedForward(Matrix inputs, int stopLayer) {
+        // Make sure input matrix and stop layer is valid
         if (inputs.getRows() != neuronCounts[0] || inputs.getColumns() != 1 || stopLayer < 1 || stopLayer >= neuronCounts.length) {
             throw new IllegalArgumentException("Invalid input matrix shape or stop layer.");
         }
 
+        // Compute each layer's outputs up until the stop layer
         Matrix previousLayerOutputs = Matrix.product(weights[0], inputs);
         previousLayerOutputs.add(biases[0]);
         previousLayerOutputs.sigmoid();
@@ -62,50 +64,41 @@ public class NeuralNet {
 
     void backPropagate(Matrix inputs, Matrix targets, double learningRate) {
         if (inputs.getRows() != neuronCounts[0] || inputs.getColumns() != 1 || targets.getRows() != neuronCounts[neuronCounts.length - 1] || targets.getColumns() != 1) {
-            throw new IllegalArgumentException("Invalid inputs or targets matrix shape.");
+            throw new IllegalArgumentException("Invalid matrix shape of inputs or targets.");
         }
 
+        // Store each matrix of layer outputs in an array
         Matrix[] layerOutputs = new Matrix[neuronCounts.length - 1];
         for (int i = 0; i < layerOutputs.length; i++) {
             layerOutputs[i] = feedForward(inputs, i + 1);
         }
 
-        Matrix[] errors = new Matrix[neuronCounts.length - 1];
+        // Compute each layer's errors
+        Matrix[] errors = new Matrix[layerOutputs.length];
         errors[errors.length - 1] = Matrix.difference(layerOutputs[layerOutputs.length - 1], targets);
         for (int i = errors.length - 2; i >= 0; i--) {
             errors[i] = Matrix.product(weights[i + 1].transposition(), errors[i + 1]);
         }
 
-        for (int i = errors.length - 1; i >= 0; i--) {
+        /*for (int i = errors.length - 1; i >= 0; i--) {
             System.out.println("Layer " + (i + 1) + " errors:");
             errors[i].printContents();
             System.out.println();
+        }*/
+
+        for (int i = errors.length - 1; i < 0; i++) {
+            Matrix biasGradient = Matrix.hadamard(errors[i], Matrix.dSigmoid(layerOutputs[i]));
+            Matrix weightsGradient;
+
+            if (i >= 1) {
+                weightsGradient = Matrix.product(biasGradient, layerOutputs[i - 1].transposition());
+            } else {
+                weightsGradient = Matrix.product(biasGradient, inputs.transposition());
+            }
+
+            biases[i].subtract(biasGradient);
+            weights[i].subtract(weightsGradient);
         }
-
-        /*
-        // Compute gradient for the output layer's weights
-        Matrix outputLayerWeightsGradient = Matrix.hadamard(errors, Matrix.dSigmoid(outputs));
-        outputLayerWeightsGradient.multiplyBy(hiddenLayerOutputs.transposition());
-        outputLayerWeightsGradient.multiplyBy(learningRate);
-
-        // Compute gradient for the hidden layer's weights
-        Matrix hiddenLayerWeightsGradient = Matrix.hadamard(hiddenLayerErrors, Matrix.dSigmoid(hiddenLayerOutputs));
-        hiddenLayerWeightsGradient.multiplyBy(inputs.transposition());
-        hiddenLayerWeightsGradient.multiplyBy(learningRate);
-
-        // Compute gradient for the output layer's biases
-        Matrix outputLayerBiasesGradient = Matrix.hadamard(errors, Matrix.dSigmoid(outputs));
-        outputLayerBiasesGradient.multiplyBy(learningRate);
-
-        // Compute gradient for the hidden layer's biases
-        Matrix hiddenLayerBiasesGradient = Matrix.hadamard(hiddenLayerErrors, Matrix.dSigmoid(hiddenLayerOutputs));
-        hiddenLayerBiasesGradient.multiplyBy(learningRate);
-
-        outputLayerWeights.subtract(outputLayerWeightsGradient);
-        hiddenLayerWeights.subtract(hiddenLayerWeightsGradient);
-        outputLayerBiases.subtract(outputLayerBiasesGradient);
-        hiddenLayerBiases.subtract(hiddenLayerBiasesGradient);
-        */
     }
 
     public void printContents() {

@@ -143,6 +143,18 @@ public class Matrix {
         }
     }
 
+    public void subtract(Matrix toSubtract) {
+        if (getRows() != toSubtract.getRows() || getColumns() != toSubtract.getColumns()) {
+            throw new IllegalArgumentException("Incompatible matrix shape");
+        }
+
+        for (int i = 0; i < getRows(); i++) {
+            for (int j = 0; j < getColumns(); j++) {
+                setValue(getValue(i, j) - toSubtract.getValue(i, j), i, j);
+            }
+        }
+    }
+
     public static Matrix sum(Matrix a, Matrix b) {
         if (a.getRows() != b.getRows() || a.getColumns() != b.getColumns()) {
             throw new IllegalArgumentException("Incompatible matrix shapes.");
@@ -156,18 +168,6 @@ public class Matrix {
         }
 
         return toReturn;
-    }
-
-    public void subtract(Matrix toSubtract) {
-        if (getRows() != toSubtract.getRows() || getColumns() != toSubtract.getColumns()) {
-            throw new IllegalArgumentException("Incompatible matrix shape");
-        }
-
-        for (int i = 0; i < getRows(); i++) {
-            for (int j = 0; j < getColumns(); j++) {
-                setValue(getValue(i, j) - toSubtract.getValue(i, j), i, j);
-            }
-        }
     }
 
     public static Matrix difference(Matrix a, Matrix b) {

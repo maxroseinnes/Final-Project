@@ -10,6 +10,16 @@ public class Matrix {
         contents = new double[rows][columns];
     }
 
+    public Matrix (double[][] array) {
+        for (int i = 1; i < array.length; i++) {
+            if (array[i].length != array[0].length) {
+                throw new IllegalArgumentException("Inconsistent row lengths.");
+            }
+        }
+
+        contents = array;
+    }
+
     public int getRows() {
         return contents.length;
     }
@@ -36,23 +46,6 @@ public class Matrix {
 
     public double[][] getContents() {
         return contents;
-    }
-
-    public Matrix fromArray(double[][] array) {
-        for (int i = 1; i < array.length; i++) {
-            if (array[i].length != array[0].length) {
-                throw new IllegalArgumentException("Inconsistent row lengths.");
-            }
-        }
-
-        Matrix toReturn = new Matrix(array.length, array[0].length);
-        for (int i = 0; i < toReturn.getRows(); i++) {
-            for (int j = 0; j < toReturn.getColumns(); j++) {
-                toReturn.setValue(array[i][j], i, j);
-            }
-        }
-
-        return toReturn;
     }
 
     public Matrix transposition() {
@@ -226,9 +219,16 @@ public class Matrix {
         return toReturn;
     }
 
-    public void printContents() {
+    public String toString() {
+        String toReturn = "";
+
         for (int i = 0; i < getRows(); i++) {
-            System.out.println(Arrays.toString(contents[i]));
+            toReturn += Arrays.toString(contents[i]);
+            if (i < getRows() - 1) {
+                toReturn += "\n";
+            }
         }
+
+        return toReturn;
     }
 }

@@ -1,4 +1,3 @@
-import java.util.Arrays;
 import java.util.Random;
 
 public class FinalProjectExperimentation {
@@ -9,20 +8,35 @@ public class FinalProjectExperimentation {
     }
 
     public FinalProjectExperimentation() {
-        NeuralNet net = new NeuralNet(2, 1);
-        net.randomize();
-        net.printContents();
+        Matrix[] xorDatasetInputs = new Matrix[4];
+        Matrix[] xorDatasetTargets = new Matrix[4];
+        xorDatasetInputs[0] = new Matrix(new double[][] {{0}, {0}});
+        xorDatasetInputs[1] = new Matrix(new double[][] {{0}, {1}});
+        xorDatasetInputs[2] = new Matrix(new double[][] {{1}, {0}});
+        xorDatasetInputs[3] = new Matrix(new double[][] {{1}, {1}});
+        xorDatasetTargets[0] = new Matrix(new double[][] {{0}});
+        xorDatasetTargets[1] = new Matrix(new double[][] {{1}});
+        xorDatasetTargets[2] = new Matrix(new double[][] {{1}});
+        xorDatasetTargets[3] = new Matrix(new double[][] {{0}});
 
-        for (int i = 0; i < 1000; i++) {
-            Matrix inputs = new Matrix(2, 1);
-            for (int j = 0; j < inputs.getRows(); j++) {
-                inputs.setValue(Math.random(), i, 0);
-            }
-            Matrix targets = new Matrix(1, 1);
-            targets.setValue(inputs.getValue(0, 0) - inputs.getValue(1, 0) >= 0 ? 1 : 0, 0, 0);
-            System.out.println(targets.getValue(0, 0) + " " + net.feedForward(inputs, net.neuronCounts.length - 1).getValue(0, 0));
+        NeuralNet net = new NeuralNet(2, 2, 1);
+        net.randomize();
+
+        for (int i = 0; i < 100; i++) {
+            int trainingExampleIndex = (int) (Math.random() * 4);
+
+            Matrix inputs = xorDatasetInputs[trainingExampleIndex];
+            Matrix targets = xorDatasetTargets[trainingExampleIndex];
+            Matrix guess = net.feedForward(inputs, net.NEURON_COUNTS.length - 1);
+            boolean correct = Math.round(guess.getValue(0, 0)) == targets.getValue(0, 0);
+
+            //System.out.println("iteration " + (i + 1) + "  |  " + inputs.transposition().toString() + "  |  " + guess.getValue(0, 0) + "  |  " + correct);
 
             net.backPropagate(inputs, targets, 0.1);
+        }
+
+        for (int i = 0; i < xorDatasetInputs.length; i++) {
+            System.out.println(xorDatasetInputs[i].toString() + " " + xorDatasetTargets[i].toString() + " " + net.feedForward(xorDatasetInputs[i], net.NEURON_COUNTS.length - 1));
         }
     }
 }

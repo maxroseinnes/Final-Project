@@ -5,7 +5,7 @@ public class NeuralNet {
 
     private Matrix[] weights;
     private Matrix[] biases;
-    final int[] neuronCounts;
+    final int[] NEURON_COUNTS;
 
     public NeuralNet(int... neuronCounts) {
         if (neuronCounts.length < 2) {
@@ -17,7 +17,7 @@ public class NeuralNet {
             }
         }
 
-        this.neuronCounts = neuronCounts;
+        this.NEURON_COUNTS = neuronCounts;
         weights = new Matrix[neuronCounts.length - 1];
         biases = new Matrix[neuronCounts.length - 1];
 
@@ -45,7 +45,7 @@ public class NeuralNet {
 
     Matrix feedForward(Matrix inputs, int stopLayer) {
         // Make sure input matrix and stop layer is valid
-        if (inputs.getRows() != neuronCounts[0] || inputs.getColumns() != 1 || stopLayer < 1 || stopLayer >= neuronCounts.length) {
+        if (inputs.getRows() != NEURON_COUNTS[0] || inputs.getColumns() != 1 || stopLayer < 1 || stopLayer >= NEURON_COUNTS.length) {
             throw new IllegalArgumentException("Invalid input matrix shape or stop layer.");
         }
 
@@ -63,12 +63,12 @@ public class NeuralNet {
     }
 
     void backPropagate(Matrix inputs, Matrix targets, double learningRate) {
-        if (inputs.getRows() != neuronCounts[0] || inputs.getColumns() != 1 || targets.getRows() != neuronCounts[neuronCounts.length - 1] || targets.getColumns() != 1) {
+        if (inputs.getRows() != NEURON_COUNTS[0] || inputs.getColumns() != 1 || targets.getRows() != NEURON_COUNTS[NEURON_COUNTS.length - 1] || targets.getColumns() != 1) {
             throw new IllegalArgumentException("Invalid matrix shape of inputs or targets.");
         }
 
         // Store each matrix of layer outputs in an array
-        Matrix[] layerOutputs = new Matrix[neuronCounts.length - 1];
+        Matrix[] layerOutputs = new Matrix[NEURON_COUNTS.length - 1];
         for (int i = 0; i < layerOutputs.length; i++) {
             layerOutputs[i] = feedForward(inputs, i + 1);
         }
@@ -80,14 +80,9 @@ public class NeuralNet {
             errors[i] = Matrix.product(weights[i + 1].transposition(), errors[i + 1]);
         }
 
-        /*for (int i = errors.length - 1; i >= 0; i--) {
-            System.out.println("Layer " + (i + 1) + " errors:");
-            errors[i].printContents();
-            System.out.println();
-        }*/
-
-        for (int i = errors.length - 1; i < 0; i++) {
+        for (int i = errors.length - 1; i >= 0; i--) {
             Matrix biasGradient = Matrix.hadamard(errors[i], Matrix.dSigmoid(layerOutputs[i]));
+            biasGradient.multiplyBy(learningRate);
             Matrix weightsGradient;
 
             if (i >= 1) {
@@ -102,12 +97,12 @@ public class NeuralNet {
     }
 
     public void printContents() {
-        for (int i = 0; i < neuronCounts.length - 1; i++) {
+        for (int i = 0; i < NEURON_COUNTS.length - 1; i++) {
             System.out.println("Layers " + (i + 1) + "-" + (i) + " weights:");
-            weights[i].printContents();
+            System.out.println(weights[i].toString());
             System.out.println("Layer " + (i + 1) + " biases:");
-            biases[i].printContents();
-            if (i != neuronCounts.length - 1) {
+            System.out.println(biases[i].toString());
+            if (i != NEURON_COUNTS.length - 1) {
                 System.out.println();
             }
         }

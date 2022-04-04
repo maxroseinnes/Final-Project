@@ -43,17 +43,17 @@ public class NeuralNet {
         }
     }
 
-    Matrix feedForward(Matrix inputs, int stopLayer) {
+    Matrix feedForward(Matrix inputs) {
         // Make sure input matrix and stop layer is valid
-        if (inputs.getRows() != NEURON_COUNTS[0] || inputs.getColumns() != 1 || stopLayer < 1 || stopLayer >= NEURON_COUNTS.length) {
-            throw new IllegalArgumentException("Invalid input matrix shape or stop layer.");
+        if (inputs.getRows() != NEURON_COUNTS[0] || inputs.getColumns() != 1) {
+            throw new IllegalArgumentException("Invalid input matrix shape.");
         }
 
         // Compute each layer's outputs up until the stop layer
         Matrix previousLayerOutputs = Matrix.product(weights[0], inputs);
         previousLayerOutputs.add(biases[0]);
         previousLayerOutputs.sigmoid();
-        for (int i = 1; i < stopLayer; i++) {
+        for (int i = 1; i < NEURON_COUNTS.length - 1; i++) {
             previousLayerOutputs = Matrix.product(weights[i], previousLayerOutputs);
             previousLayerOutputs.add(biases[i]);
             previousLayerOutputs.sigmoid();
@@ -62,16 +62,33 @@ public class NeuralNet {
         return previousLayerOutputs;
     }
 
+    Matrix[] feedForwardRecall(Matrix inputs) {
+        // Make sure input matrix and stop layer is valid
+        if (inputs.getRows() != NEURON_COUNTS[0] || inputs.getColumns() != 1) {
+            throw new IllegalArgumentException("Invalid input matrix shape.");
+        }
+
+        // Compute each layer's outputs up until the stop layer
+        Matrix[] layerOutputs = new Matrix[NEURON_COUNTS.length - 1];
+        layerOutputs[0] = Matrix.product(weights[0], inputs);
+        layerOutputs[0].add(biases[0]);
+        layerOutputs[0].sigmoid();
+        for (int i = 1; i < NEURON_COUNTS.length - 1; i++) {
+            layerOutputs[i] = Matrix.product(weights[i], layerOutputs[i - 1]);
+            layerOutputs[i].add(biases[i]);
+            layerOutputs[i].sigmoid();
+        }
+
+        return layerOutputs;
+    }
+
     void backPropagate(Matrix inputs, Matrix targets, double learningRate) {
         if (inputs.getRows() != NEURON_COUNTS[0] || inputs.getColumns() != 1 || targets.getRows() != NEURON_COUNTS[NEURON_COUNTS.length - 1] || targets.getColumns() != 1) {
             throw new IllegalArgumentException("Invalid matrix shape of inputs or targets.");
         }
 
         // Store each matrix of layer outputs in an array
-        Matrix[] layerOutputs = new Matrix[NEURON_COUNTS.length - 1];
-        for (int i = 0; i < layerOutputs.length; i++) {
-            layerOutputs[i] = feedForward(inputs, i + 1);
-        }
+        Matrix[] layerOutputs = feedForwardRecall(inputs);
 
         // Compute each layer's errors
         Matrix[] errors = new Matrix[layerOutputs.length];

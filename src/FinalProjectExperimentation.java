@@ -19,24 +19,20 @@ public class FinalProjectExperimentation {
         xorDatasetTargets[2] = new Matrix(new double[][] {{1}});
         xorDatasetTargets[3] = new Matrix(new double[][] {{0}});
 
-        NeuralNet net = new NeuralNet(2, 2, 1);
+        NeuralNet net = new NeuralNet(2, 5, 3, 1);
         net.randomize();
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 50000; i++) {
             int trainingExampleIndex = (int) (Math.random() * 4);
-
             Matrix inputs = xorDatasetInputs[trainingExampleIndex];
             Matrix targets = xorDatasetTargets[trainingExampleIndex];
-            Matrix guess = net.feedForward(inputs, net.NEURON_COUNTS.length - 1);
+
+            Matrix guess = net.feedForward(inputs);
             boolean correct = Math.round(guess.getValue(0, 0)) == targets.getValue(0, 0);
 
-            //System.out.println("iteration " + (i + 1) + "  |  " + inputs.transposition().toString() + "  |  " + guess.getValue(0, 0) + "  |  " + correct);
+            System.out.println("iteration " + (i + 1) + "  |  " + inputs.transposition().toString() + "  |  " + guess.getValue(0, 0) + "  |  " + correct);
 
             net.backPropagate(inputs, targets, 0.1);
-        }
-
-        for (int i = 0; i < xorDatasetInputs.length; i++) {
-            System.out.println(xorDatasetInputs[i].toString() + " " + xorDatasetTargets[i].toString() + " " + net.feedForward(xorDatasetInputs[i], net.NEURON_COUNTS.length - 1));
         }
     }
 }

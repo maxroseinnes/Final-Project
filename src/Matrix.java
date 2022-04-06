@@ -3,6 +3,7 @@ import java.util.Arrays;
 public class Matrix {
     private double[][] contents;
 
+    // Creates a matrix with a specified number of rows and columns.
     public Matrix(int rows, int columns) {
         if (rows < 1 || columns < 1) {
             throw new IllegalArgumentException("Invalid matrix shape.");
@@ -10,6 +11,7 @@ public class Matrix {
         contents = new double[rows][columns];
     }
 
+    // Creates a matrix with
     public Matrix (double[][] array) {
         for (int i = 1; i < array.length; i++) {
             if (array[i].length != array[0].length) {
@@ -20,14 +22,17 @@ public class Matrix {
         contents = array;
     }
 
+    // Returns the amount of rows in this matrix.
     public int getRows() {
         return contents.length;
     }
 
+    // Returns the amount of columns in this matrix.
     public int getColumns() {
         return contents[0].length;
     }
 
+    // Returns the value at a specified row and column in this matrix.
     public double getValue(int row, int column) {
         if (row < 0 || row >= getRows()) {
             throw new IllegalArgumentException("Invalid row or column.");
@@ -36,6 +41,7 @@ public class Matrix {
         return contents[row][column];
     }
 
+    // Sets a specified value
     public void setValue(double value, int row, int column) {
         if (row < 0 || row >= getRows() || column < 0 || column >= getColumns()) {
             throw new IllegalArgumentException("Invalid row or column.");
@@ -44,10 +50,12 @@ public class Matrix {
         contents[row][column] = value;
     }
 
+    // Returns the contents of this matrix as a 2D array.
     public double[][] getContents() {
         return contents;
     }
 
+    // Returns the transposition matrix of this matrix.
     public Matrix transposition() {
         Matrix toReturn = new Matrix(getColumns(), getRows());
 
@@ -60,6 +68,7 @@ public class Matrix {
         return toReturn;
     }
 
+    // Returns the matrix product of two matrices.
     public static Matrix product(Matrix a, Matrix b) {
         if (a.getColumns() != b.getRows()) {
             throw new IllegalArgumentException("Incompatible matrix shapes.");
@@ -80,28 +89,8 @@ public class Matrix {
         return toReturn;
     }
 
-    public void multiplyBy(Matrix m) {
-        if (getColumns() != m.getRows()) {
-            throw new IllegalArgumentException("Incompatible matrix shapes.");
-        }
-
-        Matrix product = new Matrix(getRows(), m.getColumns());
-
-        for (int i = 0; i < product.getRows(); i++) {
-            for (int j = 0; j < product.getColumns(); j++) {
-                double sum = 0;
-                for (int k = 0; k < getColumns(); k++) {
-                    sum += getValue(i, k) * m.getValue(k, j);
-                }
-
-                product.setValue(sum, i, j);
-            }
-        }
-
-        this.contents = product.getContents();
-    }
-
-    public void multiplyBy(double scalar) {
+    // Multiplies the contents of this matrix by a scalar product.
+    public void scaleContents(double scalar) {
         for (int i = 0; i < getRows(); i++) {
             for (int j = 0; j < getColumns(); j++) {
                 setValue(scalar * getValue(i, j), i, j);
@@ -109,6 +98,7 @@ public class Matrix {
         }
     }
 
+    // Returns the hadamard product of two matrices.
     public static Matrix hadamard(Matrix a, Matrix b) {
         if (a.getRows() != b.getRows() || a.getColumns() != b.getColumns()) {
             throw new IllegalArgumentException("Incompatible matrix dimensions.");
@@ -124,6 +114,7 @@ public class Matrix {
         return toReturn;
     }
 
+    // Adds a specified matrix to this matrix.
     public void add(Matrix toAdd) {
         if (getRows() != toAdd.getRows() || getColumns() != toAdd.getColumns()) {
             throw new IllegalArgumentException("Incompatible matrix shapes");
@@ -136,6 +127,7 @@ public class Matrix {
         }
     }
 
+    // Subtracts a specified matrix from this matrix.
     public void subtract(Matrix toSubtract) {
         if (getRows() != toSubtract.getRows() || getColumns() != toSubtract.getColumns()) {
             throw new IllegalArgumentException("Incompatible matrix shape");
@@ -148,6 +140,7 @@ public class Matrix {
         }
     }
 
+    // Returns the sum of two specified matrix.
     public static Matrix sum(Matrix a, Matrix b) {
         if (a.getRows() != b.getRows() || a.getColumns() != b.getColumns()) {
             throw new IllegalArgumentException("Incompatible matrix shapes.");
@@ -163,7 +156,8 @@ public class Matrix {
         return toReturn;
     }
 
-    public static Matrix difference(Matrix a, Matrix b) {
+    // Returns the difference of two matrices.
+    public static Matrix subtract(Matrix a, Matrix b) {
         if (a.getRows() != b.getRows() || a.getColumns() != b.getColumns()) {
             throw new IllegalArgumentException("Incompatible matrix shapes.");
         }
@@ -179,24 +173,13 @@ public class Matrix {
         return toReturn;
     }
 
+    // Passes the contents of this matrix through a sigmoid function.
     public void sigmoid() {
         for (int i = 0; i < getRows(); i++) {
             for (int j = 0; j < getColumns(); j++) {
                 setValue(1 / (1 + Math.exp(-getValue(i, j))), i, j);
             }
         }
-    }
-
-    public static Matrix sigmoid(Matrix matrix) {
-        Matrix toReturn = new Matrix(matrix.getRows(), matrix.getColumns());
-
-        for (int i = 0; i < toReturn.getRows(); i++) {
-            for (int j = 0; j < toReturn.getColumns(); j++) {
-                toReturn.setValue(1 / (1 + Math.exp(-matrix.getValue(i, j))), i, j);
-            }
-        }
-
-        return toReturn;
     }
 
     public void dSigmoid() {

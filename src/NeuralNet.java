@@ -92,14 +92,14 @@ public class NeuralNet {
 
         // Compute each layer's errors
         Matrix[] errors = new Matrix[layerOutputs.length];
-        errors[errors.length - 1] = Matrix.difference(layerOutputs[layerOutputs.length - 1], targets);
+        errors[errors.length - 1] = Matrix.subtract(layerOutputs[layerOutputs.length - 1], targets);
         for (int i = errors.length - 2; i >= 0; i--) {
             errors[i] = Matrix.product(weights[i + 1].transposition(), errors[i + 1]);
         }
 
         for (int i = errors.length - 1; i >= 0; i--) {
             Matrix biasGradient = Matrix.hadamard(errors[i], Matrix.dSigmoid(layerOutputs[i]));
-            biasGradient.multiplyBy(learningRate);
+            biasGradient.scaleContents(learningRate);
             Matrix weightsGradient;
 
             if (i >= 1) {

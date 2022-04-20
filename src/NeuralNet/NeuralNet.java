@@ -45,7 +45,7 @@ public class NeuralNet {
         }
     }
 
-    Matrix feedForward(Matrix inputs) {
+    public Matrix feedForward(Matrix inputs) {
         // Make sure input matrix and stop layer is valid
         if (inputs.getRows() != NEURON_COUNTS[0] || inputs.getColumns() != 1) {
             throw new IllegalArgumentException("Invalid input matrix shape.");

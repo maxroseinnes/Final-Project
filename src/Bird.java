@@ -1,20 +1,20 @@
-import NeuralNet.NeuralNet;
+import NeuralNet.*;
 
 public class Bird {
     final double xPos;
     double yPos;
     private double yVel;
-    final double size;
-    private final double jumpForce;
+    final double size = 20;
+    private final double jumpForce = 10;
+    private final double gravity = 0.7;
+    private final double terminalVelocity = 10;
 
-    NeuralNet brain = new NeuralNet(3, 5, 1);
+    NeuralNet brain = new NeuralNet(2, 6, 1);
 
-    public Bird(double startX, double startY, double size, double jumpForce) {
+    public Bird(double startX, double startY) {
         xPos = startX;
         yPos = startY;
         this.yVel = 0;
-        this.size = size;
-        this.jumpForce = jumpForce;
         brain.randomize();
     }
 
@@ -22,11 +22,18 @@ public class Bird {
         yVel = -jumpForce;
     }
 
-    public void update() {
-        FinalProject.panel.repaint();
+    public void think() {
+        if (brain.feedForward(new Matrix(new double[][] {{yPos}, {yVel}})).getValue(0, 0) >= 0.5) {
+            jump();
+        }
+    }
 
-        yVel += FinalProject.gravity;
+    public void update() {
         yPos += yVel;
+        yVel += gravity;
+        if (yVel > terminalVelocity) {
+            yVel = terminalVelocity;
+        }
 
         if (yPos < size / 2) {
             yPos = size / 2;

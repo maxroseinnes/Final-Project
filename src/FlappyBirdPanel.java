@@ -7,15 +7,24 @@ import java.awt.event.MouseListener;
 
 public class FlappyBirdPanel extends JPanel implements MouseListener {
     public FlappyBirdPanel(int width, int height) {
-        setSize(width, height);
+        setPreferredSize(new Dimension(width, height));
         addMouseListener(this);
     }
 
     public void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
-        Bird bird = FinalProject.bird;
+        Bird[] birds = FinalProject.birds;
+        PipePair[] pipes = FinalProject.pipes;
         graphics.setColor(Color.YELLOW);
-        graphics.fillRect((int) (bird.xPos - bird.size / 2), (int) (bird.yPos - bird.size / 2), (int) bird.size, (int) bird.size);
+        for (int i = 0; i < birds.length; i++) {
+            graphics.fillArc((int) (birds[i].xPos - birds[i].size / 2), (int) (birds[i].yPos - birds[i].size / 2), (int) birds[i].size, (int) birds[i].size, 0, 360);
+        }
+
+        graphics.setColor(Color.GREEN);
+        for (int i = 0; i < pipes.length; i++) {
+            graphics.fillRect((int) pipes[i].xPos, 0, (int) pipes[i].width, (int) (pipes[i].yPos - pipes[i].gapHeight / 2));
+            graphics.fillRect((int) pipes[i].xPos, (int) (pipes[i].yPos + pipes[i].gapHeight / 2), (int) pipes[i].width, FinalProject.panel.getHeight());
+        }
     }
 
     @Override
@@ -30,7 +39,7 @@ public class FlappyBirdPanel extends JPanel implements MouseListener {
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        FinalProject.bird.jump();
+
     }
 
     @Override

@@ -1,9 +1,9 @@
 public class PipePair {
     double xPos;
     double yPos;
-    private final double speed = 5;
-    final double width = 50;
-    final double gapHeight = 100;
+    private final double speed = 10;
+    final double width = 100;
+    final double gapHeight = 200;
 
     public PipePair(double xPos) {
         this.xPos = xPos;

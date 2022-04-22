@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
+import java.nio.channels.Pipe;
+import java.util.ArrayList;
 import java.util.Random;
 
 public class FinalProject {
@@ -8,9 +10,10 @@ public class FinalProject {
     static JFrame window = new JFrame("Final Project");
     static FlappyBirdPanel panel = new FlappyBirdPanel(600, 600);
 
-    static Bird[] birds = new Bird[1000];
-    static PipePair[] pipes = new PipePair[2];
-    static final double distanceBetweenPipes = 300;
+    static Bird[] birds = new Bird[1];
+    static ArrayList<PipePair> pipes = new ArrayList<PipePair>();
+    static final int pipeCount = 2;
+    static final double distanceBetweenPipes = 500;
 
     public static void main(String[] args) throws InterruptedException {
         new FinalProject();
@@ -27,16 +30,25 @@ public class FinalProject {
         for (int i = 0; i < birds.length; i++) {
             birds[i] = new Bird(100, panel.getHeight() / 2);
         }
-        for (int i = 0; i < pipes.length; i++) {
-            pipes[i] = new PipePair(distanceBetweenPipes * i + panel.getWidth());
+        for (int i = 0; i < pipeCount; i++) {
+            pipes.add(new PipePair(distanceBetweenPipes * i + panel.getWidth()));
         }
+
         while (true) {
             for (int i = 0; i < birds.length; i++) {
                 birds[i].think();
                 birds[i].update();
             }
-            for (int i = 0; i < pipes.length; i++) {
-                pipes[i].update();
+            for (int i = 0; i < pipes.size(); i++) {
+                pipes.get(i).update();
+                if (pipes.get(i).xPos < -pipes.get(i).width) {
+                    pipes.remove(i);
+                }
+            }
+
+            if (panel.getWidth() - pipes.get(pipes.size() - 1).xPos > distanceBetweenPipes) {
+                PipePair newPipe = new PipePair(pipes.get(pipes.size() - 1).xPos + distanceBetweenPipes);
+                pipes.add(newPipe);
             }
             panel.repaint();
             Thread.sleep(1000 / 60);

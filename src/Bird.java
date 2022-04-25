@@ -3,11 +3,12 @@ import NeuralNet.*;
 public class Bird {
     final double xPos;
     double yPos;
-    private double yVel;
-    final double size = 20;
-    private final double jumpForce = 10;
-    private final double gravity = 0.7;
-    private final double terminalVelocity = 10;
+    private double yVel = 0;
+
+    final double SIZE = 20;
+    private final double JUMP_FORCE = 10;
+    private final double GRAVITY = 0.7;
+    private final double TERMINAL_VELOCITY = 8;
 
     NeuralNet brain = new NeuralNet(2, 6, 1);
 
@@ -19,29 +20,36 @@ public class Bird {
     }
 
     public void jump() {
-        yVel = -jumpForce;
+        yVel = -JUMP_FORCE;
     }
 
     public void think() {
-        if (brain.feedForward(new Matrix(new double[][] {{yPos}, {yVel}})).getValue(0, 0) >= 0.5) {
+        if (brain.feedForward(new Matrix(new double[][]{{yPos}, {yVel}})).getValue(0, 0) >= 0.5) {
             jump();
         }
     }
 
     public void update() {
         yPos += yVel;
-        yVel += gravity;
-        if (yVel > terminalVelocity) {
-            yVel = terminalVelocity;
+        yVel += GRAVITY;
+        if (yVel > TERMINAL_VELOCITY) {
+            yVel = TERMINAL_VELOCITY;
         }
 
-        if (yPos < size / 2) {
-            yPos = size / 2;
+        if (yPos < SIZE / 2) {
+            yPos = SIZE / 2;
             yVel = 0;
-        } else if (yPos > FinalProject.panel.getHeight() - size / 2) {
-            yPos = FinalProject.panel.getHeight() - size / 2;
+        } else if (yPos > FinalProject.panel.getHeight() - SIZE / 2) {
+            yPos = FinalProject.panel.getHeight() - SIZE / 2;
             yVel = 0;
         }
+    }
+
+    public boolean intersectingWithPipe(PipePair pipe) {
+        return xPos + SIZE / 2 > pipe.xPos && xPos - SIZE / 2 < pipe.xPos + pipe.width &&
+                yPos + SIZE / 2 > 0 && yPos - SIZE / 2 < pipe.yPos - pipe.gapHeight / 2 ||
+                xPos + SIZE / 2 > pipe.xPos && xPos - SIZE / 2 < pipe.xPos + pipe.width &&
+                        yPos + SIZE / 2 > pipe.yPos + pipe.gapHeight / 2 && yPos - SIZE / 2 < FinalProject.panel.getHeight();
     }
 
     public void printInfo() {

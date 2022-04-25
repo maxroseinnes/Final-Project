@@ -1,7 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -12,20 +10,21 @@ public class FlappyBirdPanel extends JPanel implements MouseListener {
         addMouseListener(this);
     }
 
-    public void paintComponent(Graphics graphics) {
-        super.paintComponent(graphics);
-        Bird[] birds = FinalProject.birds;
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        ArrayList<Bird> birds = FinalProject.birds;
         ArrayList<PipePair> pipes = FinalProject.pipes;
-        graphics.setColor(Color.YELLOW);
-        for (int i = 0; i < birds.length; i++) {
-            graphics.fillArc((int) (birds[i].xPos - birds[i].size / 2), (int) (birds[i].yPos - birds[i].size / 2), (int) birds[i].size, (int) birds[i].size, 0, 360);
-        }
 
-        graphics.setColor(Color.GREEN);
+        g.setColor(Color.GREEN);
         for (int i = 0; i < pipes.size(); i++) {
             PipePair current = pipes.get(i);
-            graphics.fillRect((int) current.xPos, 0, (int) current.width, (int) (current.yPos - current.gapHeight / 2));
-            graphics.fillRect((int) current.xPos, (int) (current.yPos + current.gapHeight / 2), (int) current.width, FinalProject.panel.getHeight());
+            g.fillRect((int) current.xPos, 0, (int) current.width, (int) (current.yPos - current.gapHeight / 2));
+            g.fillRect((int) current.xPos, (int) (current.yPos + current.gapHeight / 2), (int) current.width, FinalProject.panel.getHeight());
+        }
+
+        g.setColor(Color.YELLOW);
+        for (Bird bird : birds) {
+            g.fillRect((int) (bird.xPos - bird.SIZE / 2), (int) (bird.yPos - bird.SIZE / 2), (int) bird.SIZE, (int) bird.SIZE);
         }
     }
 

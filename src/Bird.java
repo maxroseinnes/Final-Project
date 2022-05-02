@@ -1,5 +1,7 @@
 import NeuralNet.*;
 
+import java.util.ArrayList;
+
 public class Bird {
     final double xPos;
     double yPos;
@@ -10,7 +12,7 @@ public class Bird {
     private final double GRAVITY = 0.7;
     private final double TERMINAL_VELOCITY = 8;
 
-    NeuralNet brain = new NeuralNet(2, 6, 1);
+    NeuralNet brain = new NeuralNet(4, 6, 1);
 
     public Bird(double startX, double startY) {
         xPos = startX;
@@ -24,7 +26,18 @@ public class Bird {
     }
 
     public void think() {
-        if (brain.feedForward(new Matrix(new double[][]{{yPos}, {yVel}})).getValue(0, 0) >= 0.5) {
+        ArrayList<PipePair> pipes = FinalProject.pipes;
+        int nearestPipeIndex = 0;
+        for (int i = 1; i < pipes.size(); i++) {
+            if (xPos < pipes.get(i).xPos + pipes.get(i).width && pipes.get(i).xPos < pipes.get(nearestPipeIndex).xPos) {
+                nearestPipeIndex = i;
+            }
+        }
+
+        double xPosNearestPipe = pipes.get(nearestPipeIndex).xPos;
+        double yPosNearestPipe = pipes.get(nearestPipeIndex).yPos;
+
+        if (brain.feedForward(new Matrix(new double[][]{{yPos}, {yVel}, {xPosNearestPipe}, {yPosNearestPipe}})).getValue(0, 0) >= 0.5) {
             jump();
         }
     }

@@ -1,7 +1,7 @@
 public class PipePair {
     double xPos;
     double yPos;
-    private final double speed = 5;
+    private final double speed = 7;
     final double width = 100;
     final double gapHeight = 150;
 

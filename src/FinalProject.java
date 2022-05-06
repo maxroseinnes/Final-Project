@@ -7,23 +7,12 @@ public class FinalProject {
     static FlappyBirdPanel panel = new FlappyBirdPanel(600, 600);
 
     static ArrayList<Bird> birds = new ArrayList<Bird>();
-    final int POPULATION = 1000;
+    final int POPULATION = 100000;
     static ArrayList<PipePair> pipes = new ArrayList<PipePair>();
-    static final int PIPE_COUNT = 2;
-    static final double DISTANCE_BETWEEN_PIPES = 500;
+    static final double DISTANCE_BETWEEN_PIPES = 350;
 
     public static void main(String[] args) throws InterruptedException {
         new FinalProject();
-        ArrayList<Integer> ints = new ArrayList<Integer>();
-        for (int i = 0; i < 5; i++) {
-            ints.add(i);
-        }
-
-        Integer[] ints2 = ints.toArray(new Integer[0]);
-        ints2[0] = 1;
-        for (int i = 0; i < ints2.length; i++) {
-            //System.out.println(ints[i]);
-        }
     }
 
     public FinalProject() throws InterruptedException {
@@ -58,7 +47,7 @@ public class FinalProject {
 
             for (int i = 0; i < pipes.size(); i++) {
                 pipes.get(i).update();
-                if (pipes.get(i).xPos < -pipes.get(i).width) {
+                if (pipes.get(i).xPos < -PipePair.WIDTH) {
                     pipes.remove(i);
                 }
             }

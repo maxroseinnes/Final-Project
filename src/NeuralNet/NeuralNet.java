@@ -114,6 +114,12 @@ public class NeuralNet {
             weights[i].subtract(weightsGradient);
         }
     }
+    
+    public void mutate() {
+        for (int i = 0; i < weights.length; i++) {
+            
+        }
+    }
 
     public void printContents() {
         for (int i = 0; i < NEURON_COUNTS.length - 1; i++) {

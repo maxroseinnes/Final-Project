@@ -27,17 +27,21 @@ public class Bird {
 
     public void think() {
         ArrayList<PipePair> pipes = FinalProject.pipes;
-        int nearestPipeIndex = 0;
+        int nextPipeIndex = 0;
         for (int i = 1; i < pipes.size(); i++) {
-            if (xPos < pipes.get(i).xPos + pipes.get(i).width && pipes.get(i).xPos < pipes.get(nearestPipeIndex).xPos) {
-                nearestPipeIndex = i;
+            if (xPos < pipes.get(i).xPos + PipePair.WIDTH && pipes.get(i).xPos < pipes.get(nextPipeIndex).xPos) {
+                nextPipeIndex = i;
             }
         }
 
-        double xPosNearestPipe = pipes.get(nearestPipeIndex).xPos;
-        double yPosNearestPipe = pipes.get(nearestPipeIndex).yPos;
+        double distanceToNextPipe = pipes.get(nextPipeIndex).xPos - xPos - SIZE;
+        double yPosNearestPipe = pipes.get(nextPipeIndex).yPos;
 
-        if (brain.feedForward(new Matrix(new double[][]{{yPos}, {yVel}, {xPosNearestPipe}, {yPosNearestPipe}})).getValue(0, 0) >= 0.5) {
+        if (brain.feedForward(new Matrix(new double[][]{
+                {Util.map(yPos, 0, FinalProject.panel.getHeight() - SIZE / 2, 0, 1)},
+                {Util.map(yVel, -JUMP_FORCE, TERMINAL_VELOCITY, 0, 1)},
+                {Util.map(distanceToNextPipe, -PipePair.WIDTH, FinalProject.DISTANCE_BETWEEN_PIPES - PipePair.WIDTH, 0, 1)},
+                {Util.map(yPosNearestPipe, PipePair.GAP_HEIGHT / 2, FinalProject.panel.getHeight() - PipePair.GAP_HEIGHT, 0, 1)}})).getValue(0, 0) >= 0.5) {
             jump();
         }
     }
@@ -59,10 +63,10 @@ public class Bird {
     }
 
     public boolean intersectingWithPipe(PipePair pipe) {
-        return xPos + SIZE / 2 > pipe.xPos && xPos - SIZE / 2 < pipe.xPos + pipe.width &&
-                yPos + SIZE / 2 > 0 && yPos - SIZE / 2 < pipe.yPos - pipe.gapHeight / 2 ||
-                xPos + SIZE / 2 > pipe.xPos && xPos - SIZE / 2 < pipe.xPos + pipe.width &&
-                        yPos + SIZE / 2 > pipe.yPos + pipe.gapHeight / 2 && yPos - SIZE / 2 < FinalProject.panel.getHeight();
+        return xPos + SIZE / 2 > pipe.xPos && xPos - SIZE / 2 < pipe.xPos + pipe.WIDTH &&
+                yPos + SIZE / 2 > 0 && yPos - SIZE / 2 < pipe.yPos - pipe.GAP_HEIGHT / 2 ||
+                xPos + SIZE / 2 > pipe.xPos && xPos - SIZE / 2 < pipe.xPos + pipe.WIDTH &&
+                        yPos + SIZE / 2 > pipe.yPos + pipe.GAP_HEIGHT / 2 && yPos - SIZE / 2 < FinalProject.panel.getHeight();
     }
 
     public void printInfo() {

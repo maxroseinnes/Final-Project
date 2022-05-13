@@ -1,3 +1,5 @@
+import NeuralNet.NeuralNet;
+import NeuralNet.Util;
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
@@ -9,10 +11,11 @@ public class FinalProject {
     static ArrayList<Bird> birds = new ArrayList<Bird>();
     final int POPULATION = 100000;
     static ArrayList<PipePair> pipes = new ArrayList<PipePair>();
-    static final double DISTANCE_BETWEEN_PIPES = 350;
+    static final double DISTANCE_BETWEEN_PIPES = 500;
 
     public static void main(String[] args) throws InterruptedException {
         new FinalProject();
+
     }
 
     public FinalProject() throws InterruptedException {
@@ -29,9 +32,22 @@ public class FinalProject {
         pipes.add(new PipePair(panel.getWidth()));
 
         while (true) {
+            long temp = System.nanoTime();
+
+            if (birds.size() == 1) {
+                Bird winner = birds.get(0);
+                birds.clear();
+                for (int i = 0; i < 50; i++) {
+                    Bird newBird = new Bird(100, panel.getHeight() / 2);
+                    newBird.brain = winner.brain.copy();
+                    newBird.brain.mutate(0.01, 0.5);
+                    birds.add(newBird);
+                }
+            }
+
             for (int i = 0; i < birds.size(); i++) {
-                birds.get(i).think();
                 birds.get(i).update();
+                birds.get(i).think();
 
                 boolean intersectingWithPipe = false;
                 for (PipePair pipe : pipes) {
@@ -57,7 +73,11 @@ public class FinalProject {
                 pipes.add(newPipe);
             }
             panel.paintImmediately(0, 0, panel.getWidth(), panel.getHeight());
-            Thread.sleep(1000 / 60);
+
+            long elapsed = System.nanoTime() - temp;
+            if (elapsed < (long) 1000000000 / 60) {
+                Thread.sleep(1000 / 60 - elapsed / 1000000);
+            }
         }
     }
 }

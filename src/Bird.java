@@ -37,11 +37,7 @@ public class Bird {
         double distanceToNextPipe = pipes.get(nextPipeIndex).xPos - xPos - SIZE;
         double yPosNearestPipe = pipes.get(nextPipeIndex).yPos;
 
-        if (brain.feedForward(new Matrix(new double[][]{
-                {Util.map(yPos, 0, FinalProject.panel.getHeight() - SIZE / 2, 0, 1)},
-                {Util.map(yVel, -JUMP_FORCE, TERMINAL_VELOCITY, 0, 1)},
-                {Util.map(distanceToNextPipe, -PipePair.WIDTH, FinalProject.DISTANCE_BETWEEN_PIPES - PipePair.WIDTH, 0, 1)},
-                {Util.map(yPosNearestPipe, PipePair.GAP_HEIGHT / 2, FinalProject.panel.getHeight() - PipePair.GAP_HEIGHT, 0, 1)}})).getValue(0, 0) >= 0.5) {
+        if (brain.feedForward(new Matrix(new double[][]{{yPos}, {yVel}, {distanceToNextPipe}, {yPosNearestPipe}})).getValue(0, 0) >= 0.5) {
             jump();
         }
     }

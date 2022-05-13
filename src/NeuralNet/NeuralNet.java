@@ -101,7 +101,7 @@ public class NeuralNet {
 
         for (int i = errors.length - 1; i >= 0; i--) {
             Matrix biasGradient = Matrix.hadamard(errors[i], Matrix.dSigmoid(layerOutputs[i]));
-            biasGradient.scaleContents(learningRate);
+            biasGradient.scale(learningRate);
             Matrix weightsGradient;
 
             if (i >= 1) {
@@ -115,10 +115,52 @@ public class NeuralNet {
         }
     }
     
-    public void mutate() {
-        for (int i = 0; i < weights.length; i++) {
-            
+    public void mutate(double probability, double maxChange) {
+        if (probability < 0 || probability > 1) {
+            throw new IllegalArgumentException("Mutation probability must be between 0 and 1.");
         }
+
+        for (int i = 0; i < weights.length; i++) {
+            for (int j = 0; j < weights[i].getRows(); j++) {
+                for (int k = 0; k < weights[i].getColumns(); k++) {
+                    if (Math.random() < probability) {
+                        weights[i].setValue(weights[i].getValue(j, k) + Math.random() / 2, j, k);
+                    }
+                }
+            }
+        }
+
+        for (int i = 0; i < biases.length; i++) {
+            for (int j = 0; j < biases[i].getRows(); j++) {
+                for (int k = 0; k < biases[i].getColumns(); k++) {
+                    if (Math.random() < probability) {
+                        biases[i].setValue(biases[i].getValue(j, k) + Math.random() / 2, j, k);
+                    }
+                }
+            }
+        }
+    }
+
+    private void setWeightMatrix(Matrix matrix, int layer) {
+        if (layer < 1 || layer > weights.length) {
+            throw new IllegalArgumentException("Invalid layer.");
+        }
+        weights[layer - 1] = matrix;
+    }
+
+    private void setBiasMatrix(Matrix matrix, int layer) {
+        if (layer < 1 || layer > biases.length) {
+            throw new IllegalArgumentException("Invalid layer.");
+        }
+        biases[layer - 1] = matrix;
+    }
+
+    public NeuralNet copy() {
+        NeuralNet copyTo = new NeuralNet(NEURON_COUNTS);
+        for (int i = 0; i < weights.length; i++) {
+            copyTo.setWeightMatrix(weights[i].copy(), i + 1);
+        }
+        return copyTo;
     }
 
     public void printContents() {

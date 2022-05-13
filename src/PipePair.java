@@ -1,7 +1,7 @@
 public class PipePair {
     double xPos;
     double yPos;
-    private final double speed = 3;
+    private final double SPEED = 10;
     final static double WIDTH = 100;
     final static double GAP_HEIGHT = 150;
 
@@ -11,6 +11,6 @@ public class PipePair {
     }
 
     public void update() {
-        xPos -= speed;
+        xPos -= SPEED;
     }
 }

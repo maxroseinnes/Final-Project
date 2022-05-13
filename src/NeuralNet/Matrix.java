@@ -43,6 +43,17 @@ public class Matrix {
         return contents[row][column];
     }
 
+    public Matrix copy() {
+        Matrix toReturn = new Matrix(getRows(), getColumns());
+        for (int i = 0; i < getRows(); i++) {
+            for (int j = 0; j < getColumns(); j++) {
+                toReturn.setValue(contents[i][j], i, j);
+            }
+        }
+
+        return toReturn;
+    }
+
     // Sets a specified value
     public void setValue(double value, int row, int column) {
         if (row < 0 || row >= getRows() || column < 0 || column >= getColumns()) {
@@ -92,7 +103,7 @@ public class Matrix {
     }
 
     // Multiplies the contents of this matrix by a scalar product.
-    public void scaleContents(double scalar) {
+    public void scale(double scalar) {
         for (int i = 0; i < getRows(); i++) {
             for (int j = 0; j < getColumns(); j++) {
                 setValue(scalar * getValue(i, j), i, j);

@@ -13,6 +13,6 @@ public class Util {
         double inputRange = inputUpper - inputLower;
         double outputRange = outputUpper - outputLower;
 
-        return outputLower + input / inputRange * outputRange;
+        return outputLower + (input - inputLower) / inputRange * outputRange;
     }
 }

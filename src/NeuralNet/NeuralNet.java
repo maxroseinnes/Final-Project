@@ -5,8 +5,8 @@ import java.util.Random;
 public class NeuralNet {
     private static final Random random = new Random();
 
-    private Matrix[] weights;
-    private Matrix[] biases;
+    Matrix[] weights;
+    Matrix[] biases;
     final int[] NEURON_COUNTS;
 
     public NeuralNet(int... neuronCounts) {
@@ -124,7 +124,7 @@ public class NeuralNet {
             for (int j = 0; j < weights[i].getRows(); j++) {
                 for (int k = 0; k < weights[i].getColumns(); k++) {
                     if (Math.random() < probability) {
-                        weights[i].setValue(weights[i].getValue(j, k) + Math.random() / 2, j, k);
+                        weights[i].setValue(weights[i].getValue(j, k) + 2 * Math.random() * maxChange - maxChange, j, k);
                     }
                 }
             }
@@ -134,7 +134,7 @@ public class NeuralNet {
             for (int j = 0; j < biases[i].getRows(); j++) {
                 for (int k = 0; k < biases[i].getColumns(); k++) {
                     if (Math.random() < probability) {
-                        biases[i].setValue(biases[i].getValue(j, k) + Math.random() / 2, j, k);
+                        biases[i].setValue(biases[i].getValue(j, k) + 2 * Math.random() * maxChange - maxChange, j, k);
                     }
                 }
             }
@@ -156,11 +156,14 @@ public class NeuralNet {
     }
 
     public NeuralNet copy() {
-        NeuralNet copyTo = new NeuralNet(NEURON_COUNTS);
+        NeuralNet newNet = new NeuralNet(NEURON_COUNTS);
         for (int i = 0; i < weights.length; i++) {
-            copyTo.setWeightMatrix(weights[i].copy(), i + 1);
+            newNet.setWeightMatrix(weights[i].copy(), i + 1);
         }
-        return copyTo;
+        for (int i = 0; i < biases.length; i++) {
+            newNet.setBiasMatrix(biases[i].copy(), i + 1);
+        }
+        return newNet;
     }
 
     public void printContents() {

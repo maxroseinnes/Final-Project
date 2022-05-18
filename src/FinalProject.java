@@ -9,13 +9,12 @@ public class FinalProject {
     static FlappyBirdPanel panel = new FlappyBirdPanel(600, 600);
 
     static ArrayList<Bird> birds = new ArrayList<Bird>();
-    final int POPULATION = 100000;
+    final int POPULATION = 50;
     static ArrayList<PipePair> pipes = new ArrayList<PipePair>();
-    static final double DISTANCE_BETWEEN_PIPES = 500;
+    static final double DISTANCE_BETWEEN_PIPES = 400;
 
     public static void main(String[] args) throws InterruptedException {
         new FinalProject();
-
     }
 
     public FinalProject() throws InterruptedException {
@@ -34,37 +33,47 @@ public class FinalProject {
         while (true) {
             long temp = System.nanoTime();
 
-            if (birds.size() == 1) {
-                Bird winner = birds.get(0);
-                birds.clear();
-                for (int i = 0; i < 50; i++) {
-                    Bird newBird = new Bird(100, panel.getHeight() / 2);
-                    newBird.brain = winner.brain.copy();
-                    newBird.brain.mutate(0.01, 0.5);
-                    birds.add(newBird);
-                }
-            }
+            Bird winner = null;
 
-            for (int i = 0; i < birds.size(); i++) {
-                birds.get(i).update();
-                birds.get(i).think();
+            Iterator<Bird> birdIterator = birds.iterator();
+            while (birdIterator.hasNext()) {
+                Bird bird = birdIterator.next();
+                bird.update();
+                bird.think();
 
                 boolean intersectingWithPipe = false;
                 for (PipePair pipe : pipes) {
-                    if (birds.get(i).intersectingWithPipe(pipe)) {
+                    if (bird.intersectingWithPipe(pipe)) {
                         intersectingWithPipe = true;
                         break;
                     }
                 }
                 if (intersectingWithPipe) {
-                    birds.remove(birds.get(i));
+                    birdIterator.remove();
+                    if (birds.size() == 0) {
+                        winner = bird;
+                    }
                 }
             }
 
-            for (int i = 0; i < pipes.size(); i++) {
-                pipes.get(i).update();
-                if (pipes.get(i).xPos < -PipePair.WIDTH) {
-                    pipes.remove(i);
+            if (winner != null) {
+                for (int i = 0; i < POPULATION; i++) {
+                    Bird newBird = new Bird(100, panel.getHeight() / 2);
+                    newBird.brain = winner.brain.copy();
+                    newBird.brain.mutate(1, 0.1);
+                    birds.add(newBird);
+                }
+                pipes.clear();
+                pipes.add(new PipePair(panel.getWidth()));
+            }
+
+            Iterator<PipePair> pipeIterator = pipes.iterator();
+            while (pipeIterator.hasNext()) {
+                PipePair pipe = pipeIterator.next();
+
+                pipe.update();
+                if (pipe.xPos < -PipePair.WIDTH) {
+                    pipeIterator.remove();
                 }
             }
 

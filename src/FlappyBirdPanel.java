@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 public class FlappyBirdPanel extends JPanel {
     public FlappyBirdPanel(int width, int height) {
@@ -8,13 +9,13 @@ public class FlappyBirdPanel extends JPanel {
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        Bird[] birds = FinalProject.birds.toArray(new Bird[0]);
-        PipePair[] pipes = FinalProject.pipes.toArray(new PipePair[0]);
+        ArrayList<Bird> birds = FinalProject.birds;
+        ArrayList<PipePair> pipes = FinalProject.pipes;
 
         g.setColor(Color.GREEN);
         for (PipePair pipe : pipes) {
-            g.fillRect((int) pipe.xPos, 0, (int) pipe.WIDTH, (int) (pipe.yPos - pipe.GAP_HEIGHT / 2));
-            g.fillRect((int) pipe.xPos, (int) (pipe.yPos + pipe.GAP_HEIGHT / 2), (int) pipe.WIDTH, FinalProject.panel.getHeight());
+            g.fillRect((int) pipe.xPos, 0, (int) PipePair.WIDTH, (int) (pipe.yPos - PipePair.GAP_HEIGHT / 2));
+            g.fillRect((int) pipe.xPos, (int) (pipe.yPos + PipePair.GAP_HEIGHT / 2), (int) PipePair.WIDTH, FinalProject.panel.getHeight());
         }
 
         g.setColor(Color.YELLOW);
@@ -24,6 +25,6 @@ public class FlappyBirdPanel extends JPanel {
 
         g.setColor(Color.WHITE);
         g.setFont(new Font("Times", Font.PLAIN, 25));
-        g.drawString("Alive: " + birds.length, 0, 25);
+        g.drawString("Alive: " + birds.size(), 0, 25);
     }
 }

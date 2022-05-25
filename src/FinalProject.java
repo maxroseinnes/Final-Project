@@ -12,6 +12,8 @@ public class FinalProject {
     final int POPULATION = 50;
     static ArrayList<PipePair> pipes = new ArrayList<PipePair>();
     static final double DISTANCE_BETWEEN_PIPES = 400;
+    static final double birdStartX = 100;
+    static final double birdStartY = panel.getHeight() / 2;
 
     public static void main(String[] args) throws InterruptedException {
         new FinalProject();
@@ -26,7 +28,7 @@ public class FinalProject {
         window.setVisible(true);
 
         for (int i = 0; i < POPULATION; i++) {
-            birds.add(new Bird(100, panel.getHeight() / 2));
+            birds.add(new Bird());
         }
         pipes.add(new PipePair(panel.getWidth()));
 
@@ -58,9 +60,8 @@ public class FinalProject {
 
             if (winner != null) {
                 for (int i = 0; i < POPULATION; i++) {
-                    Bird newBird = new Bird(100, panel.getHeight() / 2);
-                    newBird.brain = winner.brain.copy();
-                    newBird.brain.mutate(1, 0.1);
+                    Bird newBird = winner.copy();
+                    newBird.mutate(0.1);
                     birds.add(newBird);
                 }
                 pipes.clear();

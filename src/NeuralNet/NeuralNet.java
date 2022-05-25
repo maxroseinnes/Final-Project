@@ -5,8 +5,8 @@ import java.util.Random;
 public class NeuralNet {
     private static final Random random = new Random();
 
-    Matrix[] weights;
-    Matrix[] biases;
+    private Matrix[] weights;
+    private Matrix[] biases;
     final int[] NEURON_COUNTS;
 
     public NeuralNet(int... neuronCounts) {
@@ -115,17 +115,11 @@ public class NeuralNet {
         }
     }
     
-    public void mutate(double probability, double maxChange) {
-        if (probability < 0 || probability > 1) {
-            throw new IllegalArgumentException("Mutation probability must be between 0 and 1.");
-        }
-
+    public void mutate(double amount) {
         for (int i = 0; i < weights.length; i++) {
             for (int j = 0; j < weights[i].getRows(); j++) {
                 for (int k = 0; k < weights[i].getColumns(); k++) {
-                    if (Math.random() < probability) {
-                        weights[i].setValue(weights[i].getValue(j, k) + 2 * Math.random() * maxChange - maxChange, j, k);
-                    }
+                    weights[i].setValue(weights[i].getValue(j, k) + 2 * Math.random() * amount - amount, j, k);
                 }
             }
         }
@@ -133,36 +127,44 @@ public class NeuralNet {
         for (int i = 0; i < biases.length; i++) {
             for (int j = 0; j < biases[i].getRows(); j++) {
                 for (int k = 0; k < biases[i].getColumns(); k++) {
-                    if (Math.random() < probability) {
-                        biases[i].setValue(biases[i].getValue(j, k) + 2 * Math.random() * maxChange - maxChange, j, k);
-                    }
+                    biases[i].setValue(biases[i].getValue(j, k) + 2 * Math.random() * amount - amount, j, k);
                 }
             }
         }
     }
 
-    private void setWeightMatrix(Matrix matrix, int layer) {
-        if (layer < 1 || layer > weights.length) {
-            throw new IllegalArgumentException("Invalid layer.");
-        }
-        weights[layer - 1] = matrix;
-    }
-
-    private void setBiasMatrix(Matrix matrix, int layer) {
-        if (layer < 1 || layer > biases.length) {
-            throw new IllegalArgumentException("Invalid layer.");
-        }
-        biases[layer - 1] = matrix;
-    }
-
     public NeuralNet copy() {
         NeuralNet newNet = new NeuralNet(NEURON_COUNTS);
         for (int i = 0; i < weights.length; i++) {
-            newNet.setWeightMatrix(weights[i].copy(), i + 1);
+            newNet.weights[i] = weights[i].copy();
         }
         for (int i = 0; i < biases.length; i++) {
-            newNet.setBiasMatrix(biases[i].copy(), i + 1);
+            newNet.biases[i] = biases[i].copy();
         }
+        return newNet;
+    }
+
+    public static NeuralNet crossover(NeuralNet a, NeuralNet b) {
+        if (a.NEURON_COUNTS.length != b.NEURON_COUNTS.length) {
+            throw new IllegalArgumentException("Networks do not have the same structure.");
+        }
+        for (int i = 0; i < a.NEURON_COUNTS.length; i++) {
+            if (a.NEURON_COUNTS[i] != b.NEURON_COUNTS[i]) {
+                throw new IllegalArgumentException("Networks do not have the same structure.");
+            }
+        }
+
+        NeuralNet newNet = a.copy();
+        for (int i = 0; i < newNet.weights.length; i++) {
+            for (int j = 0; j < newNet.weights[i].getRows(); j++) {
+                for (int k = 0; k < newNet.weights[i].getColumns(); k++) {
+                    if (Math.random() < 0.5) {
+                        newNet.weights[i].setValue(b.weights[i].getValue(j, k), j, k);
+                    }
+                }
+            }
+        }
+
         return newNet;
     }
 

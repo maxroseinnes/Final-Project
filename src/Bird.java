@@ -14,10 +14,9 @@ public class Bird {
 
     NeuralNet brain = new NeuralNet(4, 6, 1);
 
-    public Bird(double startX, double startY) {
-        xPos = startX;
-        yPos = startY;
-        this.yVel = 0;
+    public Bird() {
+        xPos = FinalProject.birdStartX;
+        yPos = FinalProject.birdStartY;
         brain.randomize();
     }
 
@@ -63,6 +62,22 @@ public class Bird {
                 yPos + SIZE / 2 > 0 && yPos - SIZE / 2 < pipe.yPos - pipe.GAP_HEIGHT / 2 ||
                 xPos + SIZE / 2 > pipe.xPos && xPos - SIZE / 2 < pipe.xPos + pipe.WIDTH &&
                         yPos + SIZE / 2 > pipe.yPos + pipe.GAP_HEIGHT / 2 && yPos - SIZE / 2 < FinalProject.panel.getHeight();
+    }
+
+    public Bird copy() {
+        Bird copy = new Bird();
+        copy.brain = brain.copy();
+        return copy;
+    }
+
+    public void mutate(double amount) {
+        brain.mutate(amount);
+    }
+
+    public static Bird crossover(Bird a, Bird b) {
+        Bird newBird = new Bird();
+        newBird.brain = NeuralNet.crossover(a.brain, b.brain);
+        return newBird;
     }
 
     public void printInfo() {

@@ -20,7 +20,7 @@ public class FlappyBirdPanel extends JPanel {
 
         g.setColor(Color.YELLOW);
         for (Bird bird : birds) {
-            g.fillRect((int) (bird.xPos - bird.SIZE / 2), (int) (bird.yPos - bird.SIZE / 2), (int) bird.SIZE, (int) bird.SIZE);
+            g.fillRect((int) bird.xPos, (int) bird.yPos, (int) Bird.SIZE, (int) Bird.SIZE);
         }
 
         g.setColor(Color.WHITE);

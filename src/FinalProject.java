@@ -13,7 +13,7 @@ public class FinalProject {
     static ArrayList<PipePair> pipes = new ArrayList<PipePair>();
     static final double DISTANCE_BETWEEN_PIPES = 400;
     static final double birdStartX = 100;
-    static final double birdStartY = panel.getHeight() / 2;
+    static final double birdStartY = panel.getPreferredSize().getHeight() / 2 - Bird.SIZE / 2;
 
     public static void main(String[] args) throws InterruptedException {
         new FinalProject();
@@ -35,8 +35,6 @@ public class FinalProject {
         while (true) {
             long temp = System.nanoTime();
 
-            Bird winner = null;
-
             Iterator<Bird> birdIterator = birds.iterator();
             while (birdIterator.hasNext()) {
                 Bird bird = birdIterator.next();
@@ -52,20 +50,7 @@ public class FinalProject {
                 }
                 if (intersectingWithPipe) {
                     birdIterator.remove();
-                    if (birds.size() == 0) {
-                        winner = bird;
-                    }
                 }
-            }
-
-            if (winner != null) {
-                for (int i = 0; i < POPULATION; i++) {
-                    Bird newBird = winner.copy();
-                    newBird.mutate(0.1);
-                    birds.add(newBird);
-                }
-                pipes.clear();
-                pipes.add(new PipePair(panel.getWidth()));
             }
 
             Iterator<PipePair> pipeIterator = pipes.iterator();

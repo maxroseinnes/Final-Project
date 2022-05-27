@@ -7,7 +7,7 @@ public class Bird {
     double yPos;
     private double yVel = 0;
 
-    final double SIZE = 20;
+    static final double SIZE = 20;
     private final double JUMP_FORCE = 10;
     private final double GRAVITY = 0.7;
     private final double TERMINAL_VELOCITY = 8;
@@ -25,7 +25,14 @@ public class Bird {
     }
 
     public void think() {
-        ArrayList<PipePair> pipes = FinalProject.pipes;
+        PipePair nextPipe = getNextPipe(FinalProject.pipes);
+
+        if (brain.feedForward(new Matrix(new double[][]{{yPos}, {yVel}, {nextPipe.xPos}, {nextPipe.yPos}})).getValue(0, 0) >= 0.5) {
+            jump();
+        }
+    }
+
+    public PipePair getNextPipe(ArrayList<PipePair> pipes) {
         int nextPipeIndex = 0;
         for (int i = 1; i < pipes.size(); i++) {
             if (xPos < pipes.get(i).xPos + PipePair.WIDTH && pipes.get(i).xPos < pipes.get(nextPipeIndex).xPos) {
@@ -33,12 +40,7 @@ public class Bird {
             }
         }
 
-        double distanceToNextPipe = pipes.get(nextPipeIndex).xPos - xPos - SIZE;
-        double yPosNearestPipe = pipes.get(nextPipeIndex).yPos;
-
-        if (brain.feedForward(new Matrix(new double[][]{{yPos}, {yVel}, {distanceToNextPipe}, {yPosNearestPipe}})).getValue(0, 0) >= 0.5) {
-            jump();
-        }
+        return pipes.get(nextPipeIndex);
     }
 
     public void update() {
@@ -48,20 +50,23 @@ public class Bird {
             yVel = TERMINAL_VELOCITY;
         }
 
-        if (yPos < SIZE / 2) {
-            yPos = SIZE / 2;
+        if (yPos < 0) {
+            yPos = 0;
             yVel = 0;
-        } else if (yPos > FinalProject.panel.getHeight() - SIZE / 2) {
-            yPos = FinalProject.panel.getHeight() - SIZE / 2;
+        } else if (yPos > FinalProject.panel.getHeight() - SIZE) {
+            yPos = FinalProject.panel.getHeight() - SIZE;
             yVel = 0;
         }
     }
 
     public boolean intersectingWithPipe(PipePair pipe) {
-        return xPos + SIZE / 2 > pipe.xPos && xPos - SIZE / 2 < pipe.xPos + pipe.WIDTH &&
-                yPos + SIZE / 2 > 0 && yPos - SIZE / 2 < pipe.yPos - pipe.GAP_HEIGHT / 2 ||
-                xPos + SIZE / 2 > pipe.xPos && xPos - SIZE / 2 < pipe.xPos + pipe.WIDTH &&
-                        yPos + SIZE / 2 > pipe.yPos + pipe.GAP_HEIGHT / 2 && yPos - SIZE / 2 < FinalProject.panel.getHeight();
+        if (xPos + SIZE > pipe.xPos && xPos < pipe.xPos + PipePair.WIDTH) {
+            if ((yPos + SIZE > 0 && yPos < pipe.yPos - PipePair.GAP_HEIGHT / 2) ||
+                    (yPos + SIZE > pipe.yPos + PipePair.GAP_HEIGHT / 2 && yPos < FinalProject.panel.getPreferredSize().getHeight())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public Bird copy() {

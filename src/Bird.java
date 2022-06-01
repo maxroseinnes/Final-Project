@@ -11,12 +11,14 @@ public class Bird {
     private final double JUMP_FORCE = 10;
     private final double GRAVITY = 0.7;
     private final double TERMINAL_VELOCITY = 8;
+    private final double birdStartX = 100;
+    private final double birdStartY = FinalProject.panel.getPreferredSize().getHeight() / 2;
 
     NeuralNet brain = new NeuralNet(4, 6, 1);
 
     public Bird() {
-        xPos = FinalProject.birdStartX;
-        yPos = FinalProject.birdStartY;
+        xPos = birdStartX;
+        yPos = birdStartY;
         brain.randomize();
     }
 
@@ -50,19 +52,19 @@ public class Bird {
             yVel = TERMINAL_VELOCITY;
         }
 
-        if (yPos < 0) {
-            yPos = 0;
+        if (yPos < SIZE / 2) {
+            yPos = SIZE / 2;
             yVel = 0;
-        } else if (yPos > FinalProject.panel.getHeight() - SIZE) {
-            yPos = FinalProject.panel.getHeight() - SIZE;
+        } else if (yPos > FinalProject.panel.getHeight() - SIZE / 2) {
+            yPos = FinalProject.panel.getHeight() - SIZE / 2;
             yVel = 0;
         }
     }
 
     public boolean intersectingWithPipe(PipePair pipe) {
-        if (xPos + SIZE > pipe.xPos && xPos < pipe.xPos + PipePair.WIDTH) {
-            if ((yPos + SIZE > 0 && yPos < pipe.yPos - PipePair.GAP_HEIGHT / 2) ||
-                    (yPos + SIZE > pipe.yPos + PipePair.GAP_HEIGHT / 2 && yPos < FinalProject.panel.getPreferredSize().getHeight())) {
+        if (xPos + SIZE / 2 > pipe.xPos - PipePair.WIDTH / 2 && xPos - SIZE / 2 < pipe.xPos + PipePair.WIDTH / 2) {
+            if ((yPos + SIZE / 2 > 0 && yPos - SIZE / 2 < pipe.yPos - PipePair.GAP_HEIGHT / 2) ||
+                    (yPos + SIZE / 2 > pipe.yPos + PipePair.GAP_HEIGHT / 2 && yPos - SIZE / 2 < FinalProject.panel.getPreferredSize().getHeight())) {
                 return true;
             }
         }

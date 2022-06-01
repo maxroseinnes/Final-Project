@@ -11,9 +11,6 @@ public class FinalProject {
     static ArrayList<Bird> birds = new ArrayList<Bird>();
     final int POPULATION = 50;
     static ArrayList<PipePair> pipes = new ArrayList<PipePair>();
-    static final double DISTANCE_BETWEEN_PIPES = 400;
-    static final double birdStartX = 100;
-    static final double birdStartY = panel.getPreferredSize().getHeight() / 2 - Bird.SIZE / 2;
 
     public static void main(String[] args) throws InterruptedException {
         new FinalProject();
@@ -30,7 +27,7 @@ public class FinalProject {
         for (int i = 0; i < POPULATION; i++) {
             birds.add(new Bird());
         }
-        pipes.add(new PipePair(panel.getWidth()));
+        pipes.add(new PipePair(panel.getWidth() + PipePair.WIDTH / 2));
 
         while (true) {
             long temp = System.nanoTime();
@@ -63,8 +60,8 @@ public class FinalProject {
                 }
             }
 
-            if (panel.getWidth() - pipes.get(pipes.size() - 1).xPos > DISTANCE_BETWEEN_PIPES) {
-                PipePair newPipe = new PipePair(pipes.get(pipes.size() - 1).xPos + DISTANCE_BETWEEN_PIPES);
+            if (panel.getWidth() + PipePair.WIDTH / 2 - pipes.get(pipes.size() - 1).xPos > PipePair.DISTANCE_BETWEEN_PIPES) {
+                PipePair newPipe = new PipePair(pipes.get(pipes.size() - 1).xPos + PipePair.DISTANCE_BETWEEN_PIPES);
                 pipes.add(newPipe);
             }
             panel.paintImmediately(0, 0, panel.getWidth(), panel.getHeight());

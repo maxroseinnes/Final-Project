@@ -14,7 +14,7 @@ public class Matrix {
     }
 
     // Creates a matrix with
-    public Matrix (double[][] array) {
+    public Matrix(double[][] array) {
         for (int i = 1; i < array.length; i++) {
             if (array[i].length != array[0].length) {
                 throw new IllegalArgumentException("Inconsistent row lengths.");
@@ -61,11 +61,6 @@ public class Matrix {
         }
 
         contents[row][column] = value;
-    }
-
-    // Returns the contents of this matrix as a 2D array.
-    public double[][] getContents() {
-        return contents;
     }
 
     // Returns the transposition matrix of this matrix.
@@ -127,19 +122,6 @@ public class Matrix {
         return toReturn;
     }
 
-    // Adds a specified matrix to this matrix.
-    public void add(Matrix toAdd) {
-        if (getRows() != toAdd.getRows() || getColumns() != toAdd.getColumns()) {
-            throw new IllegalArgumentException("Incompatible matrix shapes");
-        }
-
-        for (int i = 0; i < getRows(); i++) {
-            for (int j = 0; j < getColumns(); j++) {
-                setValue(getValue(i, j) + toAdd.getValue(i, j), i, j);
-            }
-        }
-    }
-
     // Subtracts a specified matrix from this matrix.
     public void subtract(Matrix toSubtract) {
         if (getRows() != toSubtract.getRows() || getColumns() != toSubtract.getColumns()) {
@@ -195,24 +177,19 @@ public class Matrix {
         }
     }
 
-    public void dSigmoid() {
+    public void modify(int function) {
         for (int i = 0; i < getRows(); i++) {
             for (int j = 0; j < getColumns(); j++) {
-                setValue(getValue(i, j) * (1 - getValue(i, j)), i, j);
+                switch (function) {
+                    case Function.SIGMOID:
+                        setValue(Function.sigmoid(getValue(i, j)), i, j);
+                        break;
+                    case Function.D_SIGMOID:
+                        setValue(Function.dSigmoid(getValue(i, j)), i, j);
+                        break;
+                }
             }
         }
-    }
-
-    public static Matrix dSigmoid(Matrix sigmoidOutputs) {
-        Matrix toReturn = new Matrix(sigmoidOutputs.getRows(), sigmoidOutputs.getColumns());
-
-        for (int i = 0; i < toReturn.getRows(); i++) {
-            for (int j = 0; j < toReturn.getColumns(); j++) {
-                toReturn.setValue(sigmoidOutputs.getValue(i, j) * (1 - sigmoidOutputs.getValue(i, j)), i, j);
-            }
-        }
-
-        return toReturn;
     }
 
     public String toString() {

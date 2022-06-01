@@ -52,13 +52,11 @@ public class NeuralNet {
         }
 
         // Compute each layer's outputs up until the stop layer
-        Matrix previousLayerOutputs = Matrix.product(weights[0], inputs);
-        previousLayerOutputs.add(biases[0]);
-        previousLayerOutputs.sigmoid();
+        Matrix previousLayerOutputs = Matrix.sum(Matrix.product(weights[0], inputs), biases[0]);
+        previousLayerOutputs.modify(Function.SIGMOID);
         for (int i = 1; i < NEURON_COUNTS.length - 1; i++) {
-            previousLayerOutputs = Matrix.product(weights[i], previousLayerOutputs);
-            previousLayerOutputs.add(biases[i]);
-            previousLayerOutputs.sigmoid();
+            previousLayerOutputs = Matrix.sum(Matrix.product(weights[i], previousLayerOutputs), biases[i]);
+            previousLayerOutputs.modify(Function.SIGMOID);
         }
 
         return previousLayerOutputs;
@@ -72,13 +70,11 @@ public class NeuralNet {
 
         // Compute each layer's outputs up until the stop layer
         Matrix[] layerOutputs = new Matrix[NEURON_COUNTS.length - 1];
-        layerOutputs[0] = Matrix.product(weights[0], inputs);
-        layerOutputs[0].add(biases[0]);
-        layerOutputs[0].sigmoid();
+        layerOutputs[0] = Matrix.sum(Matrix.product(weights[0], inputs), biases[0]);
+        layerOutputs[0].modify(Function.SIGMOID);
         for (int i = 1; i < NEURON_COUNTS.length - 1; i++) {
-            layerOutputs[i] = Matrix.product(weights[i], layerOutputs[i - 1]);
-            layerOutputs[i].add(biases[i]);
-            layerOutputs[i].sigmoid();
+            layerOutputs[i] = Matrix.sum(Matrix.product(weights[i], layerOutputs[i - 1]), biases[i]);
+            layerOutputs[i].modify(Function.SIGMOID);
         }
 
         return layerOutputs;
@@ -100,7 +96,9 @@ public class NeuralNet {
         }
 
         for (int i = errors.length - 1; i >= 0; i--) {
-            Matrix biasGradient = Matrix.hadamard(errors[i], Matrix.dSigmoid(layerOutputs[i]));
+            Matrix biasGradient = layerOutputs[i].copy();
+            biasGradient.modify(Function.D_SIGMOID);
+            biasGradient = Matrix.hadamard(biasGradient, errors[i]);
             biasGradient.scale(learningRate);
             Matrix weightsGradient;
 
@@ -110,8 +108,8 @@ public class NeuralNet {
                 weightsGradient = Matrix.product(biasGradient, inputs.transposition());
             }
 
-            biases[i].subtract(biasGradient);
-            weights[i].subtract(weightsGradient);
+            biases[i] = Matrix.subtract(biases[i], biasGradient);
+            weights[i] = Matrix.subtract(biases[i], weightsGradient);
         }
     }
     

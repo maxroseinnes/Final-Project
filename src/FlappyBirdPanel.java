@@ -14,13 +14,13 @@ public class FlappyBirdPanel extends JPanel {
 
         g.setColor(Color.GREEN);
         for (PipePair pipe : pipes) {
-            g.fillRect((int) pipe.xPos, 0, (int) PipePair.WIDTH, (int) (pipe.yPos - PipePair.GAP_HEIGHT / 2));
-            g.fillRect((int) pipe.xPos, (int) (pipe.yPos + PipePair.GAP_HEIGHT / 2), (int) PipePair.WIDTH, FinalProject.panel.getHeight());
+            g.fillRect((int) (pipe.xPos - PipePair.WIDTH / 2), 0, (int) PipePair.WIDTH, (int) (pipe.yPos - PipePair.GAP_HEIGHT / 2));
+            g.fillRect((int) (pipe.xPos - PipePair.WIDTH / 2), (int) (pipe.yPos + PipePair.GAP_HEIGHT / 2), (int) PipePair.WIDTH, FinalProject.panel.getHeight());
         }
 
         g.setColor(Color.YELLOW);
         for (Bird bird : birds) {
-            g.fillRect((int) bird.xPos, (int) bird.yPos, (int) Bird.SIZE, (int) Bird.SIZE);
+            g.fillRect((int) (bird.xPos - Bird.SIZE / 2), (int) (bird.yPos - Bird.SIZE / 2), (int) Bird.SIZE, (int) Bird.SIZE);
         }
 
         g.setColor(Color.WHITE);

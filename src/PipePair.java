@@ -1,9 +1,10 @@
 public class PipePair {
     double xPos;
     double yPos;
-    private final double SPEED = 0.5;
+    private final double SPEED = 5;
     final static double WIDTH = 100;
     final static double GAP_HEIGHT = 150;
+    final static double DISTANCE_BETWEEN_PIPES = 400;
 
     public PipePair(double xPos) {
         this.xPos = xPos;

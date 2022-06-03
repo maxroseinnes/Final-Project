@@ -11,14 +11,16 @@ public class Bird {
     private final double JUMP_FORCE = 10;
     private final double GRAVITY = 0.7;
     private final double TERMINAL_VELOCITY = 8;
-    private final double birdStartX = 100;
-    private final double birdStartY = FinalProject.panel.getPreferredSize().getHeight() / 2;
+    boolean alive = true;
+    int scoreAtDeath = -1;
+    static final double startX = 100;
+    static final double startY = FinalProject.panel.getPreferredSize().getHeight() / 2;
 
     NeuralNet brain = new NeuralNet(4, 6, 1);
 
     public Bird() {
-        xPos = birdStartX;
-        yPos = birdStartY;
+        xPos = startX;
+        yPos = startY;
         brain.randomize();
     }
 

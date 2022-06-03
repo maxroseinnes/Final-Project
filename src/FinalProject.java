@@ -9,8 +9,10 @@ public class FinalProject {
     static FlappyBirdPanel panel = new FlappyBirdPanel(600, 600);
 
     static ArrayList<Bird> birds = new ArrayList<Bird>();
-    final int POPULATION = 50;
+    static final int POPULATION = 10000;
     static ArrayList<PipePair> pipes = new ArrayList<PipePair>();
+    static int score = 0;
+    static int aliveCount = POPULATION;
 
     public static void main(String[] args) throws InterruptedException {
         new FinalProject();
@@ -35,6 +37,9 @@ public class FinalProject {
             Iterator<Bird> birdIterator = birds.iterator();
             while (birdIterator.hasNext()) {
                 Bird bird = birdIterator.next();
+                if (!bird.alive) {
+                    continue;
+                }
                 bird.update();
                 bird.think();
 
@@ -46,7 +51,14 @@ public class FinalProject {
                     }
                 }
                 if (intersectingWithPipe) {
-                    birdIterator.remove();
+                    bird.alive = false;
+                    bird.scoreAtDeath = score;
+                    aliveCount--;
+                    if (aliveCount == 0) {
+                        for (int i = 0; i < birds.size(); i++) {
+                            System.out.println(birds.get(i).scoreAtDeath);
+                        }
+                    }
                 }
             }
 

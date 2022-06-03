@@ -20,11 +20,14 @@ public class FlappyBirdPanel extends JPanel {
 
         g.setColor(Color.YELLOW);
         for (Bird bird : birds) {
-            g.fillRect((int) (bird.xPos - Bird.SIZE / 2), (int) (bird.yPos - Bird.SIZE / 2), (int) Bird.SIZE, (int) Bird.SIZE);
+            if (bird.alive) {
+                g.fillRect((int) (bird.xPos - Bird.SIZE / 2), (int) (bird.yPos - Bird.SIZE / 2), (int) Bird.SIZE, (int) Bird.SIZE);
+            }
         }
 
         g.setColor(Color.WHITE);
         g.setFont(new Font("Times", Font.PLAIN, 25));
-        g.drawString("Alive: " + birds.size(), 0, 25);
+        g.drawString("Alive: " + FinalProject.aliveCount, 0, 25);
+        g.drawString("Score: " + FinalProject.score, 0, 100);
     }
 }

@@ -112,24 +112,6 @@ public class NeuralNet {
             weights[i] = Matrix.subtract(biases[i], weightsGradient);
         }
     }
-    
-    public void mutate(double amount) {
-        for (int i = 0; i < weights.length; i++) {
-            for (int j = 0; j < weights[i].getRows(); j++) {
-                for (int k = 0; k < weights[i].getColumns(); k++) {
-                    weights[i].setValue(weights[i].getValue(j, k) + 2 * Math.random() * amount - amount, j, k);
-                }
-            }
-        }
-
-        for (int i = 0; i < biases.length; i++) {
-            for (int j = 0; j < biases[i].getRows(); j++) {
-                for (int k = 0; k < biases[i].getColumns(); k++) {
-                    biases[i].setValue(biases[i].getValue(j, k) + 2 * Math.random() * amount - amount, j, k);
-                }
-            }
-        }
-    }
 
     public NeuralNet copy() {
         NeuralNet newNet = new NeuralNet(NEURON_COUNTS);
@@ -140,6 +122,26 @@ public class NeuralNet {
             newNet.biases[i] = biases[i].copy();
         }
         return newNet;
+    }
+
+    public void mutate(double range, double rate) {
+        for (int i = 0; i < weights.length; i++) {
+            for (int j = 0; j < weights[i].getRows(); j++) {
+                for (int k = 0; k < weights[i].getColumns(); k++) {
+                    if (Math.random() < rate) {
+                        weights[i].setValue(weights[i].getValue(j, k) + 2 * Math.random() * range - range, j, k);
+                    }
+                }
+            }
+        }
+
+        for (int i = 0; i < biases.length; i++) {
+            for (int j = 0; j < biases[i].getRows(); j++) {
+                for (int k = 0; k < biases[i].getColumns(); k++) {
+                    biases[i].setValue(biases[i].getValue(j, k) + 2 * Math.random() * range - range, j, k);
+                }
+            }
+        }
     }
 
     public static NeuralNet crossover(NeuralNet a, NeuralNet b) {

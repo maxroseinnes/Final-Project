@@ -12,7 +12,7 @@ public class Bird {
     private final double GRAVITY = 0.7;
     private final double TERMINAL_VELOCITY = 8;
     boolean alive = true;
-    int scoreAtDeath = -1;
+    int fitness = 0;
     static final double startX = 100;
     static final double startY = FinalProject.panel.getPreferredSize().getHeight() / 2;
 
@@ -76,11 +76,12 @@ public class Bird {
     public Bird copy() {
         Bird copy = new Bird();
         copy.brain = brain.copy();
+        copy.fitness = fitness;
         return copy;
     }
 
-    public void mutate(double amount) {
-        brain.mutate(amount);
+    public void mutate(double range, double rate) {
+        brain.mutate(range, rate);
     }
 
     public static Bird crossover(Bird a, Bird b) {

@@ -7,7 +7,7 @@ public class FinalProject {
     static FlappyBirdPanel panel = new FlappyBirdPanel(600, 600);
 
     static ArrayList<Bird> birds = new ArrayList<Bird>();
-    static final int POPULATION = 50;
+    static final int POPULATION = 10000;
     static final double PARENT_RATE = 0.1;
     static ArrayList<PipePair> pipes = new ArrayList<PipePair>();
     static int aliveCount = POPULATION;
@@ -58,55 +58,35 @@ public class FinalProject {
             }
 
             if (aliveCount == 0) {
-                ArrayList<Integer> fitnesses = new ArrayList<Integer>();
-                for (int i = 0; i < birds.size(); i++) {
-                    int fitness = birds.get(i).fitness;
-                    if (!fitnesses.contains(fitness)) {
-                        fitnesses.add(fitness);
+                int[] fitnesses = new int[birds.size()];
+                for (int i = 0; i < fitnesses.length; i++) {
+                    fitnesses[i] = birds.get(i).fitness;
+                }
+                Arrays.sort(fitnesses);
+
+                int[] selectionWeights = new int[fitnesses.length];
+                int tieIndexStart = 0;
+                for (int i = 1; i < fitnesses.length; i++) {
+                    if (!(fitnesses[i] == fitnesses[tieIndexStart])) {
+                        for (int j = tieIndexStart; j < i; j++) {
+                            selectionWeights[j] = tieIndexStart + i + 1;
+                        }
+                        tieIndexStart = i;
                     }
-                }
-                int[] fitnessesArray = new int[fitnesses.size()];
-                for (int i = 0; i < fitnesses.size(); i++) {
-                    fitnessesArray[i] = fitnesses.get(i);
-                    System.out.println(fitnessesArray[i]);
-                }
-                Arrays.sort(fitnessesArray);
 
-                System.out.println("\n\n\n\n\n\n\n");
-
-                ArrayList<Bird> bestBirds = new ArrayList<>();
-                int i = fitnessesArray.length - 1;
-                while (bestBirds.size() < POPULATION * PARENT_RATE) {
-                    for (int j = 0; j < birds.size(); j++) {
-                        Bird bird = birds.get(j);
-                        if (bird.fitness == fitnessesArray[i]) {
-                            bestBirds.add(bird.copy());
+                    if (i == fitnesses.length - 1) {
+                        for (int j = tieIndexStart; j <= i; j++) {
+                            selectionWeights[j] = tieIndexStart + i + 2;
                         }
                     }
-                    i--;
                 }
 
-                birds.clear();
-                for (int j = 0; j < POPULATION; j++) {
-                    int parent1Index = (int) (Math.random() * bestBirds.size());
-                    int parent2Index = (int) (Math.random() * bestBirds.size());
-                    System.out.println(parent1Index + ", " + parent2Index);
-                    while (parent1Index == parent2Index) {
-                        parent2Index = (int) (Math.random() * bestBirds.size());
-                    }
-
-                    Bird newBird = Bird.crossover(bestBirds.get(parent1Index), bestBirds.get(parent2Index));
-                    newBird.mutate(0.5, 0.1);
-                    birds.add(newBird);
+                double[] normalizedSelectionWeights = new double[selectionWeights.length];
+                for (int i = 0; i < normalizedSelectionWeights.length; i++) {
+                    normalizedSelectionWeights[i] = (double) selectionWeights[i] / (selectionWeights.length * (selectionWeights.length + 1));
                 }
 
-                System.out.println(birds.size());
-
-                pipes.clear();
-                pipes.add(new PipePair(panel.getWidth() + PipePair.WIDTH / 2));
-                score = 0;
-                aliveCount = POPULATION;
-                continue;
+                break;
             }
 
             Iterator<PipePair> pipeIterator = pipes.iterator();

@@ -122,19 +122,6 @@ public class Matrix {
         return toReturn;
     }
 
-    // Subtracts a specified matrix from this matrix.
-    public void subtract(Matrix toSubtract) {
-        if (getRows() != toSubtract.getRows() || getColumns() != toSubtract.getColumns()) {
-            throw new IllegalArgumentException("Incompatible matrix shape");
-        }
-
-        for (int i = 0; i < getRows(); i++) {
-            for (int j = 0; j < getColumns(); j++) {
-                setValue(getValue(i, j) - toSubtract.getValue(i, j), i, j);
-            }
-        }
-    }
-
     // Returns the sum of two specified matrix.
     public static Matrix sum(Matrix a, Matrix b) {
         if (a.getRows() != b.getRows() || a.getColumns() != b.getColumns()) {
@@ -166,15 +153,6 @@ public class Matrix {
         }
 
         return toReturn;
-    }
-
-    // Passes the contents of this matrix through a sigmoid function.
-    public void sigmoid() {
-        for (int i = 0; i < getRows(); i++) {
-            for (int j = 0; j < getColumns(); j++) {
-                setValue(1 / (1 + Math.exp(-getValue(i, j))), i, j);
-            }
-        }
     }
 
     public void modify(int function) {

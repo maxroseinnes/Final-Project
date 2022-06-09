@@ -15,6 +15,9 @@ public class PipePair {
         xPos -= SPEED;
         if (xPos + WIDTH / 2 > Bird.startX - Bird.SIZE / 2 - SPEED && xPos + WIDTH / 2 <= Bird.startX - Bird.SIZE / 2) {
             FinalProject.score++;
+            if (FinalProject.score > FinalProject.highScore) {
+                FinalProject.highScore = FinalProject.score;
+            }
         }
     }
 }

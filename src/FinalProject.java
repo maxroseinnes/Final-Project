@@ -7,11 +7,13 @@ public class FinalProject {
     static FlappyBirdPanel panel = new FlappyBirdPanel(600, 600);
 
     static ArrayList<Bird> birds = new ArrayList<Bird>();
-    static final int POPULATION = 10000;
+    static final int POPULATION = 100;
     static final double PARENT_RATE = 0.1;
     static ArrayList<PipePair> pipes = new ArrayList<PipePair>();
     static int aliveCount = POPULATION;
     static int score = 0;
+    static int highScore = 0;
+    static int generation = 1;
 
     public static void main(String[] args) throws InterruptedException {
         new FinalProject();
@@ -33,9 +35,8 @@ public class FinalProject {
         while (true) {
             long timeBefore = System.nanoTime();
 
-            Iterator<Bird> birdIterator = birds.iterator();
-            while (birdIterator.hasNext()) {
-                Bird bird = birdIterator.next();
+            // Update all birds and check for pipe intersections
+            for (Bird bird : birds) {
                 if (!bird.alive) {
                     continue;
                 }
@@ -57,36 +58,104 @@ public class FinalProject {
                 }
             }
 
+            // If all birds are dead, generate next generation and reset
             if (aliveCount == 0) {
-                int[] fitnesses = new int[birds.size()];
-                for (int i = 0; i < fitnesses.length; i++) {
-                    fitnesses[i] = birds.get(i).fitness;
+                ArrayList<Integer> fitnesses = new ArrayList<Integer>();
+                for (Bird bird : birds) {
+                    int fitness = bird.fitness;
+                    if (!fitnesses.contains(fitness)) {
+                        fitnesses.add(fitness);
+                    }
                 }
-                Arrays.sort(fitnesses);
+                Collections.sort(fitnesses);
 
-                int[] selectionWeights = new int[fitnesses.length];
-                int tieIndexStart = 0;
-                for (int i = 1; i < fitnesses.length; i++) {
-                    if (!(fitnesses[i] == fitnesses[tieIndexStart])) {
-                        for (int j = tieIndexStart; j < i; j++) {
-                            selectionWeights[j] = tieIndexStart + i + 1;
+                int parentCount = (int) Math.ceil(POPULATION * PARENT_RATE);
+                ArrayList<Bird> parents = new ArrayList<>();
+                int i = fitnesses.size() - 1;
+                while (parents.size() < parentCount) {
+                    ArrayList<Bird> toAdd = new ArrayList<Bird>();
+
+                    for (Bird bird : birds) {
+                        if (bird.fitness == fitnesses.get(i)) {
+                            toAdd.add(bird);
                         }
-                        tieIndexStart = i;
                     }
 
-                    if (i == fitnesses.length - 1) {
-                        for (int j = tieIndexStart; j <= i; j++) {
-                            selectionWeights[j] = tieIndexStart + i + 2;
+                    if (toAdd.size() > parentCount - parents.size()) {
+                        int temp = parentCount - parents.size();
+                        for (int j = 0; j < temp; j++) {
+                            int index = (int) (Math.random() * toAdd.size());
+                            parents.add(toAdd.get(index).copy());
+                            toAdd.remove(index);
+                        }
+                    } else {
+                        for (Bird bird : toAdd) {
+                            parents.add(bird.copy());
+                        }
+                    }
+
+                    i--;
+                }
+                Collections.reverse(parents);
+
+                int[] selectionWeights = new int[parents.size()];
+                int tieIndexStart = 0;
+                for (int j = 1; j < parents.size(); j++) {
+                    if (!(parents.get(j).fitness == parents.get(tieIndexStart).fitness)) {
+                        for (int k = tieIndexStart; k < j; k++) {
+                            selectionWeights[k] = tieIndexStart + j + 1;
+                        }
+                        tieIndexStart = j;
+                    }
+
+                    if (j == parents.size() - 1) {
+                        for (int k = tieIndexStart; k <= j; k++) {
+                            selectionWeights[k] = tieIndexStart + j + 2;
                         }
                     }
                 }
 
                 double[] normalizedSelectionWeights = new double[selectionWeights.length];
-                for (int i = 0; i < normalizedSelectionWeights.length; i++) {
-                    normalizedSelectionWeights[i] = (double) selectionWeights[i] / (selectionWeights.length * (selectionWeights.length + 1));
+                for (int j = 0; j < normalizedSelectionWeights.length; j++) {
+                    normalizedSelectionWeights[j] = (double) selectionWeights[j] / (selectionWeights.length * (selectionWeights.length + 1));
                 }
 
-                break;
+                birds.clear();
+                for (int j = 0; j < POPULATION; j++) {
+                    int parent1Index = -1;
+                    int parent2Index = -1;
+                    double lowBound = 0;
+                    double random = Math.random();
+                    for (int k = 0; k < normalizedSelectionWeights.length; k++) {
+                        if (random >= lowBound && random < lowBound + normalizedSelectionWeights[k]) {
+                            parent1Index = k;
+                            break;
+                        }
+                        lowBound += normalizedSelectionWeights[k];
+                    }
+
+                    do {
+                        lowBound = 0;
+                        random = Math.random();
+                        for (int k = 0; k < normalizedSelectionWeights.length; k++) {
+                            if (random >= lowBound && random < lowBound + normalizedSelectionWeights[k]) {
+                                parent2Index = k;
+                                break;
+                            }
+                            lowBound += normalizedSelectionWeights[k];
+                        }
+                    } while (parent1Index == parent2Index);
+
+                    Bird newBird = Bird.crossover(parents.get(parent1Index), parents.get(parent2Index));
+                    newBird.mutate(0.5, 0.1);
+                    birds.add(newBird);
+                }
+
+                aliveCount = POPULATION;
+                score = 0;
+                generation++;
+                pipes.clear();
+                pipes.add(new PipePair(panel.getWidth() + PipePair.WIDTH / 2));
             }
 
             Iterator<PipePair> pipeIterator = pipes.iterator();
@@ -100,8 +169,7 @@ public class FinalProject {
             }
 
             if (panel.getWidth() + PipePair.WIDTH / 2 - pipes.get(pipes.size() - 1).xPos > PipePair.DISTANCE_BETWEEN_PIPES) {
-                PipePair newPipe = new PipePair(pipes.get(pipes.size() - 1).xPos + PipePair.DISTANCE_BETWEEN_PIPES);
-                pipes.add(newPipe);
+                pipes.add(new PipePair(pipes.get(pipes.size() - 1).xPos + PipePair.DISTANCE_BETWEEN_PIPES));
             }
             panel.paintImmediately(0, 0, panel.getWidth(), panel.getHeight());
 

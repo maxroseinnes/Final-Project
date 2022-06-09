@@ -27,7 +27,9 @@ public class FlappyBirdPanel extends JPanel {
 
         g.setColor(Color.WHITE);
         g.setFont(new Font("Times", Font.PLAIN, 25));
-        g.drawString("Alive: " + FinalProject.aliveCount, 0, 25);
-        g.drawString("Score: " + FinalProject.score, 0, 100);
+        g.drawString("Generation: " + FinalProject.generation, 0, 25);
+        g.drawString("Alive: " + FinalProject.aliveCount, 0, 50);
+        g.drawString("Score: " + FinalProject.score, 0, 75);
+        g.drawString("High Score: " + FinalProject.highScore, 0, 100);
     }
 }

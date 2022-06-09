@@ -15,6 +15,8 @@ public class FinalProject {
     static int highScore = 0;
     static int generation = 1;
 
+    static boolean slow = true;
+
     public static void main(String[] args) throws InterruptedException {
         new FinalProject();
     }
@@ -175,7 +177,9 @@ public class FinalProject {
 
             long elapsed = System.nanoTime() - timeBefore;
             if (elapsed < (long) 1000000000 / 60) {
-                Thread.sleep(1000 / 60 - elapsed / 1000000);
+                if (slow) {
+                    Thread.sleep(1000 / 60 - elapsed / 1000000);
+                }
             }
         }
     }

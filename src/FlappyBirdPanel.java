@@ -1,10 +1,13 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
-public class FlappyBirdPanel extends JPanel {
+public class FlappyBirdPanel extends JPanel implements MouseListener {
     public FlappyBirdPanel(int width, int height) {
         setPreferredSize(new Dimension(width, height));
+        addMouseListener(this);
     }
 
     public void paintComponent(Graphics g) {
@@ -31,5 +34,30 @@ public class FlappyBirdPanel extends JPanel {
         g.drawString("Alive: " + FinalProject.aliveCount, 0, 50);
         g.drawString("Score: " + FinalProject.score, 0, 75);
         g.drawString("High Score: " + FinalProject.highScore, 0, 100);
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        FinalProject.slow = !FinalProject.slow;
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
     }
 }
